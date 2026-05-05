@@ -31,47 +31,19 @@ const SL=[
   {id:"leg_ins",titulo:"ESTADO INSTALACIÓN",items:[{d:"Revisión tuberías y aislamientos",f:"6"},{d:"Difusores y grifería",f:"6"},{d:"Torres de refrigeración (si aplica)",f:"3"},{d:"Libro de registro y documentación",f:"3"}]},
 ];
 
-function initCh(secs){
-  const ch={};
-  secs.forEach(s=>s.items.forEach((_,i)=>{
-    ch[s.id+"_"+i+"_si"]=false;
-    ch[s.id+"_"+i+"_no"]=false;
-    ch[s.id+"_"+i+"_obs"]="";
-  }));
-  return ch;
-}
-
-function initMF(){
-  return {clienteId:"",emplazamiento:"",poblacion:"",provincia:"",fecha:"",tipoMant:"calderas",
-    checks:initCh(SC),otrosDesc:"",otrosReal:"",
-    tAC:"",tAR:"",tIC:"",tIR:"",tRC:"",tRR:"",
-    g1:"",g2:"",l1a:"",l1b:"",l2a:"",l2b:"",c1a:"",c1b:"",c2a:"",c2b:"",
-    firmaTec:null,firmaOp:null,ticket:null};
-}
+function initCh(secs){const ch={};secs.forEach(s=>s.items.forEach((_,i)=>{ch[s.id+"_"+i+"_si"]=false;ch[s.id+"_"+i+"_no"]=false;ch[s.id+"_"+i+"_obs"]="";}));return ch;}
+function initMF(){return{clienteId:"",emplazamiento:"",poblacion:"",provincia:"",fecha:"",tipoMant:"calderas",checks:initCh(SC),otrosDesc:"",otrosReal:"",tAC:"",tAR:"",tIC:"",tIR:"",tRC:"",tRR:"",g1:"",g2:"",l1a:"",l1b:"",l2a:"",l2b:"",c1a:"",c1b:"",c2a:"",c2b:"",firmaTec:null,firmaOp:null,ticket:null};}
 
 const INIT={
-  users:[
-    {id:1,nombre:"Admin Garpi",usuario:"admin",password:"admin123",rol:"admin"},
-    {id:2,nombre:"Carlos Pérez",usuario:"carlos",password:"op123",rol:"operario"},
-    {id:3,nombre:"Miguel Torres",usuario:"miguel",password:"op123",rol:"operario"},
-    {id:4,nombre:"Juan Ruiz",usuario:"juan",password:"op123",rol:"operario"},
-  ],
-  clientes:[
-    {id:1,nombre:"Restaurante El Faro",direccion:"C/ Mar 12, Sevilla",emps:["Cocina principal","Sala calderas B1"]},
-    {id:2,nombre:"Hotel Guadalquivir",direccion:"Avda. Borbolla 5, Sevilla",emps:["Sala calderas PB","Cuarto técnico P3"]},
-    {id:3,nombre:"Bar La Triana",direccion:"C/ Betis 22, Sevilla",emps:["Cocina","Terraza"]},
-  ],
+  users:[{id:1,nombre:"Admin Garpi",usuario:"admin",password:"admin123",rol:"admin"},{id:2,nombre:"Carlos Pérez",usuario:"carlos",password:"op123",rol:"operario"},{id:3,nombre:"Miguel Torres",usuario:"miguel",password:"op123",rol:"operario"},{id:4,nombre:"Juan Ruiz",usuario:"juan",password:"op123",rol:"operario"}],
+  clientes:[{id:1,nombre:"Restaurante El Faro",direccion:"C/ Mar 12, Sevilla",emps:["Cocina principal","Sala calderas B1"]},{id:2,nombre:"Hotel Guadalquivir",direccion:"Avda. Borbolla 5, Sevilla",emps:["Sala calderas PB","Cuarto técnico P3"]},{id:3,nombre:"Bar La Triana",direccion:"C/ Betis 22, Sevilla",emps:["Cocina","Terraza"]}],
   tareas:[
     {id:1,clienteId:1,titulo:"Revisión instalación gas",descripcion:"Inspección anual",asignadoA:2,fecha:"2026-04-28",estado:"pendiente",aceptada:false,dieta:"12",tipo:"correctivo"},
     {id:2,clienteId:2,titulo:"Mantenimiento caldera",descripcion:"Sustitución válvula",asignadoA:3,fecha:"2026-04-29",estado:"pendiente",aceptada:false,dieta:"",tipo:"correctivo"},
     {id:3,clienteId:3,titulo:"Revisión quemadores",descripcion:"Limpieza y ajuste",asignadoA:2,fecha:"2026-04-15",estado:"completada",aceptada:true,dieta:"12",tipo:"correctivo"},
     {id:4,clienteId:1,titulo:"Mantenimiento preventivo",descripcion:"Ficha mensual",asignadoA:2,fecha:"2026-04-20",estado:"completada",aceptada:true,dieta:"",tipo:"preventivo"},
   ],
-  partes:[
-    {id:1,tareaId:3,operarioId:2,clienteId:3,fecha:"2026-04-15",obra:"Bar La Triana",tipo:"correctivo",
-     lineas:[{trabajador:"Carlos Pérez",trabajosRealizados:"Limpieza quemadores",materialesUtilizados:"Desengrasante 2L"}],
-     observaciones:"Revisión en 6 meses",horas:"3",firmaCliente:null,firmaTrabajador:null,fotos:[],estado:"firmado"},
-  ],
+  partes:[{id:1,tareaId:3,operarioId:2,clienteId:3,fecha:"2026-04-15",obra:"Bar La Triana",tipo:"correctivo",lineas:[{trabajador:"Carlos Pérez",trabajosRealizados:"Limpieza quemadores",materialesUtilizados:"Desengrasante 2L"}],observaciones:"Revisión en 6 meses",horas:"3",firmaCliente:null,firmaTrabajador:null,fotos:[],estado:"firmado"}],
   partesM:[],
 };
 
@@ -81,8 +53,8 @@ function reducer(s,a){
     case"ADD_PARTE": return{...s,partes:[...s.partes,a.p],tareas:s.tareas.map(t=>t.id===a.p.tareaId?{...t,estado:"completada"}:t)};
     case"ADD_PARTE_M": return{...s,partesM:[...s.partesM,a.p],tareas:s.tareas.map(t=>t.id===a.p.tareaId?{...t,estado:"completada"}:t)};
     case"ADD_TAREA": return{...s,tareas:[...s.tareas,a.t]};
-    case"DEL_TAREA": return{...s,tareas:s.tareas.filter(t=>t.id!==a.id)};
     case"UPD_TAREA": return{...s,tareas:s.tareas.map(t=>t.id===a.t.id?{...a.t}:t)};
+    case"DEL_TAREA": return{...s,tareas:s.tareas.filter(t=>t.id!==a.id)};
     case"ADD_CLI": return{...s,clientes:[...s.clientes,a.c]};
     case"UPD_CLI": return{...s,clientes:s.clientes.map(c=>c.id===a.c.id?{...a.c}:c)};
     case"DEL_CLI": return{...s,clientes:s.clientes.filter(c=>c.id!==a.id)};
@@ -96,21 +68,33 @@ function reducer(s,a){
 }
 
 function SigPad({label,onSave}){
-  const ref=useRef(null);const dr=useRef(false);const[signed,setSigned]=useState(false);
-  useEffect(()=>{const c=ref.current,x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.strokeStyle="#111";x.lineWidth=2;x.lineCap="round";},[]);
-  const gp=(e,c)=>{const r=c.getBoundingClientRect(),src=e.touches?e.touches[0]:e;return{x:src.clientX-r.left,y:src.clientY-r.top};};
-  const ds=e=>{e.preventDefault();dr.current=true;const c=ref.current,x=c.getContext("2d"),p=gp(e,c);x.beginPath();x.moveTo(p.x,p.y);};
+  const ref=useRef(null);
+  const dr=useRef(false);
+  const[signed,setSigned]=useState(false);
+  const[saved,setSaved]=useState(false);
+  useEffect(()=>{
+    const c=ref.current,x=c.getContext("2d");
+    c.width=c.offsetWidth||300;
+    x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
+    x.strokeStyle="#111";x.lineWidth=2.5;x.lineCap="round";x.lineJoin="round";
+  },[]);
+  const gp=(e,c)=>{const r=c.getBoundingClientRect(),src=e.touches?e.touches[0]:e;return{x:(src.clientX-r.left)*(c.width/r.width),y:(src.clientY-r.top)*(c.height/r.height)};};
+  const ds=e=>{e.preventDefault();dr.current=true;const c=ref.current,x=c.getContext("2d"),p=gp(e,c);x.beginPath();x.moveTo(p.x,p.y);setSaved(false);};
   const dm=e=>{e.preventDefault();if(!dr.current)return;const c=ref.current,x=c.getContext("2d"),p=gp(e,c);x.lineTo(p.x,p.y);x.stroke();setSigned(true);};
   const de=e=>{e.preventDefault();dr.current=false;};
-  const clr=()=>{const c=ref.current,x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);setSigned(false);};
+  const clr=()=>{const c=ref.current,x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);setSigned(false);setSaved(false);};
+  const save=()=>{onSave(ref.current.toDataURL());setSaved(true);};
   return(
-    <div style={{margin:"8px 0"}}>
-      <p style={{fontSize:13,color:C.gray,margin:"0 0 4px"}}>{label}</p>
-      <canvas ref={ref} width={300} height={90} style={{border:"1px solid #ccc",borderRadius:8,touchAction:"none",cursor:"crosshair",display:"block",maxWidth:"100%",background:"#fff"}}
-        onMouseDown={ds} onMouseMove={dm} onMouseUp={de} onTouchStart={ds} onTouchMove={dm} onTouchEnd={de}/>
-      <div style={{display:"flex",gap:8,marginTop:6}}>
-        <button onClick={clr} style={{fontSize:12,padding:"4px 10px",borderRadius:6,border:"1px solid #ccc",background:"#fff",cursor:"pointer"}}>Borrar</button>
-        {signed&&<button onClick={()=>onSave(ref.current.toDataURL())} style={{fontSize:12,padding:"4px 12px",borderRadius:6,border:"none",background:C.primary,color:"#fff",cursor:"pointer",fontWeight:500}}>Guardar firma ✓</button>}
+    <div style={{margin:"12px 0"}}>
+      <p style={{fontSize:13,color:C.gray,margin:"0 0 6px",fontWeight:500}}>{label}</p>
+      <canvas ref={ref} width={300} height={110}
+        style={{border:"2px solid "+(signed?C.primary:"#ccc"),borderRadius:10,touchAction:"none",cursor:"crosshair",display:"block",width:"100%",maxWidth:400,background:"#fff",boxSizing:"border-box"}}
+        onMouseDown={ds} onMouseMove={dm} onMouseUp={de} onMouseLeave={de}
+        onTouchStart={ds} onTouchMove={dm} onTouchEnd={de}/>
+      <div style={{display:"flex",gap:8,marginTop:8,alignItems:"center"}}>
+        <button onClick={clr} style={{fontSize:13,padding:"6px 14px",borderRadius:8,border:"1px solid #ccc",background:"#fff",cursor:"pointer",color:C.gray}}>Borrar</button>
+        {signed&&!saved&&<button onClick={save} style={{fontSize:13,padding:"6px 14px",borderRadius:8,border:"none",background:C.primary,color:"#fff",cursor:"pointer",fontWeight:500}}>Guardar firma</button>}
+        {saved&&<span style={{fontSize:13,color:C.success,fontWeight:500}}>✓ Firma guardada</span>}
       </div>
     </div>
   );
@@ -146,8 +130,12 @@ function TareaCard({t,showEdit,sess,gc,gu,st,onEdit,onEliminar,onAceptar,onCrear
           {showEdit&&sess.rol==="admin"&&(
             <button onClick={()=>onEliminar(t.id)} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.dangerLight,color:C.danger,fontSize:12,cursor:"pointer"}}>Eliminar</button>
           )}
-          {sess.rol==="operario"&&!t.aceptada&&t.asignadoA===sess.id&&<button onClick={()=>onAceptar(t.id)} style={{padding:"6px 12px",borderRadius:7,border:"none",background:C.success,color:"#fff",fontSize:12,cursor:"pointer"}}>Aceptar</button>}
-          {sess.rol==="operario"&&t.aceptada&&!pe&&t.asignadoA===sess.id&&<button onClick={()=>onCrearParte(t)} style={{padding:"6px 12px",borderRadius:7,border:"none",background:C.primary,color:"#fff",fontSize:12,cursor:"pointer"}}>Crear parte</button>}
+          {sess.rol==="operario"&&!t.aceptada&&t.asignadoA===sess.id&&(
+            <button onClick={()=>onAceptar(t.id)} style={{padding:"6px 12px",borderRadius:7,border:"none",background:C.success,color:"#fff",fontSize:12,cursor:"pointer"}}>Aceptar</button>
+          )}
+          {sess.rol==="operario"&&t.aceptada&&!pe&&t.asignadoA===sess.id&&(
+            <button onClick={()=>onCrearParte(t)} style={{padding:"6px 12px",borderRadius:7,border:"none",background:C.primary,color:"#fff",fontSize:12,cursor:"pointer"}}>Crear parte</button>
+          )}
           {pe&&<Bdg text="Parte creado" color={C.success} bg={C.successLight}/>}
         </div>
       </div>
@@ -158,16 +146,8 @@ function TareaCard({t,showEdit,sess,gc,gu,st,onEdit,onEliminar,onAceptar,onCrear
 function Clientes({st,dispatch}){
   const[show,setShow]=useState(false);const[edit,setEdit]=useState(null);
   const[nom,setNom]=useState("");const[dir,setDir]=useState("");const[emps,setEmps]=useState("");
-  const guardar=()=>{
-    if(!nom.trim())return;
-    dispatch({type:"ADD_CLI",c:{id:Date.now(),nombre:nom.trim(),direccion:dir.trim(),emps:emps.split(",").map(x=>x.trim()).filter(Boolean)}});
-    setNom("");setDir("");setEmps("");setShow(false);
-  };
-  const guardarEdit=()=>{
-    if(!edit||!edit.nombre.trim())return;
-    dispatch({type:"UPD_CLI",c:{id:edit.id,nombre:edit.nombre.trim(),direccion:(edit.dir||"").trim(),emps:(edit.emps||"").split(",").map(x=>x.trim()).filter(Boolean)}});
-    setEdit(null);
-  };
+  const guardar=()=>{if(!nom.trim())return;dispatch({type:"ADD_CLI",c:{id:Date.now(),nombre:nom.trim(),direccion:dir.trim(),emps:emps.split(",").map(x=>x.trim()).filter(Boolean)}});setNom("");setDir("");setEmps("");setShow(false);};
+  const guardarEdit=()=>{if(!edit||!edit.nombre.trim())return;dispatch({type:"UPD_CLI",c:{id:edit.id,nombre:edit.nombre.trim(),direccion:(edit.dir||"").trim(),emps:(edit.emps||"").split(",").map(x=>x.trim()).filter(Boolean)}});setEdit(null);};
   return(
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
@@ -182,7 +162,7 @@ function Clientes({st,dispatch}){
           <div style={{marginBottom:8}}><input placeholder="Emplazamientos separados por coma" value={emps} onChange={e=>setEmps(e.target.value)} style={IS}/></div>
           <div style={{display:"flex",gap:8}}>
             <button onClick={guardar} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:13,cursor:"pointer"}}>Guardar</button>
-            <button onClick={()=>setShow(false)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer"}}>Cancelar</button>
+            <button onClick={()=>setShow(false)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.gray}}>Cancelar</button>
           </div>
         </div>
       )}
@@ -194,7 +174,7 @@ function Clientes({st,dispatch}){
           <div style={{marginBottom:8}}><input placeholder="Emplazamientos separados por coma" value={edit.emps||""} onChange={e=>setEdit(f=>({...f,emps:e.target.value}))} style={IS}/></div>
           <div style={{display:"flex",gap:8}}>
             <button onClick={guardarEdit} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:13,cursor:"pointer"}}>Guardar cambios</button>
-            <button onClick={()=>setEdit(null)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer"}}>Cancelar</button>
+            <button onClick={()=>setEdit(null)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.gray}}>Cancelar</button>
           </div>
         </div>
       )}
@@ -209,7 +189,7 @@ function Clientes({st,dispatch}){
             </div>
             <div style={{display:"flex",gap:6,flexShrink:0}}>
               <button onClick={()=>{setEdit({id:c.id,nombre:c.nombre,dir:c.direccion,emps:(c.emps||[]).join(", ")});setShow(false);}} style={{padding:"5px 10px",borderRadius:7,border:"1px solid "+C.primary,background:"#fff",color:C.primary,fontSize:12,cursor:"pointer"}}>Editar</button>
-              <button onClick={()=>{if(window.confirm("¿Eliminar "+c.nombre+"?"))dispatch({type:"DEL_CLI",id:c.id});}} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.dangerLight,color:C.danger,fontSize:12,cursor:"pointer"}}>Eliminar</button>
+              <button onClick={()=>dispatch({type:"DEL_CLI",id:c.id})} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.dangerLight,color:C.danger,fontSize:12,cursor:"pointer"}}>Eliminar</button>
             </div>
           </div>
         </div>
@@ -244,27 +224,15 @@ function Dietas({st,gc,gu,pdfFn}){
         <div style={{background:C.warningLight,borderRadius:10,padding:"14px 16px"}}><div style={{fontSize:12,color:C.warning,marginBottom:4}}>Total dietas</div><div style={{fontSize:26,fontWeight:500,color:C.warning}}>{tot.toFixed(2)} €</div></div>
         <div style={{background:C.primaryLight,borderRadius:10,padding:"14px 16px"}}><div style={{fontSize:12,color:C.primary,marginBottom:4}}>Con dieta</div><div style={{fontSize:26,fontWeight:500,color:C.primary}}>{dt.length}</div></div>
       </div>
-      {Object.keys(pm).length>0&&(
-        <div style={{marginBottom:16}}>
-          <h3 style={{fontWeight:500,fontSize:15,margin:"0 0 10px"}}>Por mes</h3>
-          {Object.entries(pm).map(([mes,v])=>(
-            <div key={mes} style={{display:"flex",justifyContent:"space-between",background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:8,padding:"10px 14px",marginBottom:6}}>
-              <span>{mes}</span><span style={{fontWeight:500,color:C.warning}}>{v.toFixed(2)} €</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {Object.keys(pm).length>0&&<div style={{marginBottom:16}}><h3 style={{fontWeight:500,fontSize:15,margin:"0 0 10px"}}>Por mes</h3>{Object.entries(pm).map(([mes,v])=><div key={mes} style={{display:"flex",justifyContent:"space-between",background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:8,padding:"10px 14px",marginBottom:6}}><span>{mes}</span><span style={{fontWeight:500,color:C.warning}}>{v.toFixed(2)} €</span></div>)}</div>}
       <h3 style={{fontWeight:500,fontSize:15,margin:"0 0 10px"}}>Detalle</h3>
       {dt.length===0&&<div style={{fontSize:13,color:C.gray}}>Sin dietas para el período seleccionado.</div>}
-      {dt.map(t=>{
-        const cli=gc(t.clienteId),op=gu(t.asignadoA);
-        return(
-          <div key={t.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:8,padding:"10px 14px",marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div><div style={{fontSize:13,fontWeight:500}}>{t.titulo}</div><div style={{fontSize:12,color:C.gray}}>{op.nombre} · {cli.nombre} · {t.fecha}</div></div>
-            <span style={{fontWeight:500,color:C.warning,fontSize:14}}>{t.dieta} €</span>
-          </div>
-        );
-      })}
+      {dt.map(t=>{const cli=gc(t.clienteId),op=gu(t.asignadoA);return(
+        <div key={t.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:8,padding:"10px 14px",marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div><div style={{fontSize:13,fontWeight:500}}>{t.titulo}</div><div style={{fontSize:12,color:C.gray}}>{op.nombre} · {cli.nombre} · {t.fecha}</div></div>
+          <span style={{fontWeight:500,color:C.warning,fontSize:14}}>{t.dieta} €</span>
+        </div>
+      );})}
     </div>
   );
 }
@@ -282,14 +250,10 @@ export default function App(){
   const[pf,setPf]=useState({lineas:[{trab:"",mat:""}],obs:"",hrs:"",fCli:null,fTrab:null});
   const[mf,setMf]=useState(initMF());
   const[no,setNo]=useState({nombre:"",usuario:"",password:""});
-  // nueva tarea — estado en App para evitar remounts
-  const[ntCli,setNtCli]=useState("");
-  const[ntTit,setNtTit]=useState("");
-  const[ntDes,setNtDes]=useState("");
-  const[ntOp,setNtOp]=useState("");
-  const[ntFec,setNtFec]=useState("");
-  const[ntDie,setNtDie]=useState("");
+  const[ntCli,setNtCli]=useState("");const[ntTit,setNtTit]=useState("");const[ntDes,setNtDes]=useState("");
+  const[ntOp,setNtOp]=useState("");const[ntFec,setNtFec]=useState("");const[ntDie,setNtDie]=useState("");
   const[ntTip,setNtTip]=useState("correctivo");
+  const[menuOpen,setMenuOpen]=useState(false);
 
   const doLogin=()=>{const u=st.users.find(u=>u.usuario===lu&&u.password===lp);if(u){setSess(u);setSec("dashboard");setLe("");}else setLe("Usuario o contraseña incorrectos");};
   const doLogout=()=>{setSess(null);setLu("");setLp("");setLe("");};
@@ -301,13 +265,11 @@ export default function App(){
   const myM=sess?st.partesM.filter(p=>sess.rol==="admin"||p.operarioId===sess.id):[];
 
   const crearTarea=()=>{
-    const cid=Number(ntCli);
-    const aid=Number(ntOp);
+    const cid=Number(ntCli),aid=Number(ntOp);
     if(!cid){alert("Selecciona un cliente");return;}
     if(!ntTit.trim()){alert("Escribe un título");return;}
     if(!aid){alert("Selecciona un operario");return;}
-    const nuevaTarea={id:Date.now(),clienteId:cid,asignadoA:aid,titulo:ntTit.trim(),descripcion:ntDes,fecha:ntFec,dieta:ntDie,tipo:ntTip,estado:"pendiente",aceptada:false};
-    dispatch({type:"ADD_TAREA",t:nuevaTarea});
+    dispatch({type:"ADD_TAREA",t:{id:Date.now(),clienteId:cid,asignadoA:aid,titulo:ntTit.trim(),descripcion:ntDes,fecha:ntFec,dieta:ntDie,tipo:ntTip,estado:"pendiente",aceptada:false}});
     setNtCli("");setNtTit("");setNtDes("");setNtOp("");setNtFec("");setNtDie("");setNtTip("correctivo");
     setShowNT(false);
   };
@@ -327,7 +289,7 @@ export default function App(){
   const updCh=(k,v)=>setMf(f=>({...f,checks:{...f.checks,[k]:v}}));
   const chgTipo=tipo=>{let ch={};if(tipo==="calderas")ch=initCh(SC);else if(tipo==="grupos")ch=initCh(SG);else if(tipo==="legionella")ch=initCh(SL);setMf(f=>({...f,tipoMant:tipo,checks:ch,ticket:null}));};
 
-  const mkPDF=(html)=>{const w=window.open("","_blank");w.document.write(html);w.document.close();w.print();};
+  const mkPDF=html=>{const w=window.open("","_blank");w.document.write(html);w.document.close();w.print();};
 
   const pdfC=p=>{
     const cli=gc(p.clienteId),tarea=gt(p.tareaId);
@@ -344,61 +306,26 @@ export default function App(){
   const pdfM=pm=>{
     const cli=gc(pm.clienteId),op=gu(pm.operarioId);
     let secsU=SC;if(pm.tipoMant==="grupos")secsU=SG;else if(pm.tipoMant==="legionella")secsU=SL;
-    const rows=pm.tipoMant==="otros"
-      ?"<tr><td colspan='5'><b>"+(pm.otrosDesc||"")+"</b><br>"+(pm.otrosReal||"")+"</td></tr>"
-      :secsU.map(s=>{
-        const hf=s.items[0]&&typeof s.items[0]==="object";
-        return "<tr><td colspan='5' style='background:#ddd;font-weight:bold'>"+s.titulo+"</td></tr>"
-          +"<tr><th>Op</th>"+(hf?"<th>Frec</th>":"")+"<th>SI</th><th>NO</th><th>Obs</th></tr>"
-          +s.items.map((item,i)=>{
-            const d=typeof item==="object"?item.d:item,f=typeof item==="object"?item.f:null;
-            return "<tr><td>"+d+"</td>"+(f!==null?"<td>"+f+"</td>":"")
-              +"<td>"+(pm.checks&&pm.checks[s.id+"_"+i+"_si"]?"&#10003;":"")+"</td>"
-              +"<td>"+(pm.checks&&pm.checks[s.id+"_"+i+"_no"]?"&#10003;":"")+"</td>"
-              +"<td>"+(pm.checks&&pm.checks[s.id+"_"+i+"_obs"]||"")+"</td></tr>";
-          }).join("");
-      }).join("");
+    const rows=pm.tipoMant==="otros"?"<tr><td colspan='5'><b>"+(pm.otrosDesc||"")+"</b><br>"+(pm.otrosReal||"")+"</td></tr>":secsU.map(s=>{const hf=s.items[0]&&typeof s.items[0]==="object";return"<tr><td colspan='5' style='background:#ddd;font-weight:bold'>"+s.titulo+"</td></tr><tr><th>Op</th>"+(hf?"<th>Frec</th>":"")+"<th>SI</th><th>NO</th><th>Obs</th></tr>"+s.items.map((item,i)=>{const d=typeof item==="object"?item.d:item,f=typeof item==="object"?item.f:null;return"<tr><td>"+d+"</td>"+(f!==null?"<td>"+f+"</td>":"")+"<td>"+(pm.checks&&pm.checks[s.id+"_"+i+"_si"]?"&#10003;":"")+"</td><td>"+(pm.checks&&pm.checks[s.id+"_"+i+"_no"]?"&#10003;":"")+"</td><td>"+(pm.checks&&pm.checks[s.id+"_"+i+"_obs"]||"")+"</td></tr>";}).join("");}).join("");
     mkPDF("<!DOCTYPE html><html><head><meta charset='utf-8'><style>body{font-family:Arial;margin:20px;font-size:11px}table{width:100%;border-collapse:collapse;margin:6px 0}th,td{border:1px solid #000;padding:4px}th{background:#f0f0f0}img{max-width:150px;max-height:60px}</style></head><body>"
       +"<div style='display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px'><div><b>GARPI S.L.</b></div><div><b>FICHA MANTENIMIENTO — "+(pm.tipoMant==="calderas"?"Sala de Calderas":pm.tipoMant==="grupos"?"Grupos de Presión":pm.tipoMant==="legionella"?"Legionella":"Otros")+"</b></div></div>"
       +"<p><b>Instalación:</b> "+(cli.nombre||"")+" &nbsp;<b>Emplazamiento:</b> "+(pm.emplazamiento||"")+"</p>"
       +"<p><b>Población:</b> "+(pm.poblacion||"")+" &nbsp;<b>Provincia:</b> "+(pm.provincia||"")+" &nbsp;<b>Operario:</b> "+(op.nombre||"")+" &nbsp;<b>Fecha:</b> "+(pm.fecha||"")+"</p>"
-      +"<table>"+rows+"</table>"
-      +(pm.ticket?"<p><b>Ticket:</b><br><img src='"+pm.ticket+"'/></p>":"")
-      +(pm.tipoMant==="calderas"
-        ?"<table><tr><th colspan='2'>PARÁMETROS</th><th>Control Planta</th><th>Real Equipos</th></tr>"
-          +"<tr><td colspan='2'>Temp. acumulación ACS</td><td>"+(pm.tAC||"")+" °C</td><td>"+(pm.tAR||"")+" °C</td></tr>"
-          +"<tr><td colspan='2'>Temp. impulsión primario</td><td>"+(pm.tIC||"")+" °C</td><td>"+(pm.tIR||"")+" °C</td></tr>"
-          +"<tr><td colspan='2'>Temp. retorno ACS</td><td>"+(pm.tRC||"")+" °C</td><td>"+(pm.tRR||"")+" °C</td></tr></table>"
-          +"<table><tr><th colspan='2'>LECTURAS</th><th>Contador 1</th><th>Contador 2</th></tr>"
-          +"<tr><td colspan='2'>Contador gas</td><td>"+(pm.g1||"")+"</td><td>"+(pm.g2||"")+"</td></tr>"
-          +"<tr><td colspan='2'>Libre 1</td><td>"+(pm.l1a||"")+"</td><td>"+(pm.l1b||"")+"</td></tr>"
-          +"<tr><td colspan='2'>Libre 2</td><td>"+(pm.l2a||"")+"</td><td>"+(pm.l2b||"")+"</td></tr></table>"
-          +"<table><tr><th colspan='2'>CORRECTORES</th><th>Corrector 1</th><th>Corrector 2</th></tr>"
-          +"<tr><td colspan='2'>Energía 1</td><td>"+(pm.c1a||"")+"</td><td>"+(pm.c1b||"")+"</td></tr>"
-          +"<tr><td colspan='2'>Energía 2</td><td>"+(pm.c2a||"")+"</td><td>"+(pm.c2b||"")+"</td></tr></table>"
-        :"")
-      +"<br><table><tr><td style='width:50%'><b>Firma técnico:</b><br>"+(pm.firmaTec?"<img src='"+pm.firmaTec+"'/>":" ")+"</td>"
-      +"<td><b>Firma operario:</b><br>"+(pm.firmaOp?"<img src='"+pm.firmaOp+"'/>":" ")+"</td></tr></table></body></html>");
+      +"<table>"+rows+"</table>"+(pm.ticket?"<p><b>Ticket:</b><br><img src='"+pm.ticket+"'/></p>":"")
+      +(pm.tipoMant==="calderas"?"<table><tr><th colspan='2'>PARÁMETROS</th><th>Control Planta</th><th>Real Equipos</th></tr><tr><td colspan='2'>Temp. acumulación ACS</td><td>"+(pm.tAC||"")+" \xb0C</td><td>"+(pm.tAR||"")+" \xb0C</td></tr><tr><td colspan='2'>Temp. impulsión primario</td><td>"+(pm.tIC||"")+" \xb0C</td><td>"+(pm.tIR||"")+" \xb0C</td></tr><tr><td colspan='2'>Temp. retorno ACS</td><td>"+(pm.tRC||"")+" \xb0C</td><td>"+(pm.tRR||"")+" \xb0C</td></tr></table><table><tr><th colspan='2'>LECTURAS</th><th>Contador 1</th><th>Contador 2</th></tr><tr><td colspan='2'>Contador gas</td><td>"+(pm.g1||"")+"</td><td>"+(pm.g2||"")+"</td></tr><tr><td colspan='2'>Libre 1</td><td>"+(pm.l1a||"")+"</td><td>"+(pm.l1b||"")+"</td></tr><tr><td colspan='2'>Libre 2</td><td>"+(pm.l2a||"")+"</td><td>"+(pm.l2b||"")+"</td></tr></table><table><tr><th colspan='2'>CORRECTORES</th><th>Corrector 1</th><th>Corrector 2</th></tr><tr><td colspan='2'>Energía 1</td><td>"+(pm.c1a||"")+"</td><td>"+(pm.c1b||"")+"</td></tr><tr><td colspan='2'>Energía 2</td><td>"+(pm.c2a||"")+"</td><td>"+(pm.c2b||"")+"</td></tr></table>":"")
+      +"<br><table><tr><td style='width:50%'><b>Firma cliente:</b><br>"+(pm.firmaTec?"<img src='"+pm.firmaTec+"'/>":" ")+"</td><td><b>Firma operario-mantenedor:</b><br>"+(pm.firmaOp?"<img src='"+pm.firmaOp+"'/>":" ")+"</td></tr></table></body></html>");
   };
 
   const pdfMensual=()=>{
     const tm=st.tareas.filter(t=>{const[y,m]=t.fecha.split("-").map(Number);return y===calY&&m===calM+1;});
     const td=tm.reduce((s,t)=>s+(parseFloat(t.dieta)||0),0);
-    mkPDF("<!DOCTYPE html><html><head><meta charset='utf-8'><style>body{font-family:Arial;margin:20px;font-size:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:5px}th{background:#f0f0f0}</style></head><body>"
-      +"<h2>GARPI S.L. — Informe: "+MONTHS[calM]+" "+calY+"</h2>"
-      +"<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Cliente</th><th>Operario</th><th>Trabajo</th><th>Estado</th><th>Dieta</th><th>Horas</th></tr></thead><tbody>"
-      +tm.map(t=>{const c=gc(t.clienteId),o=gu(t.asignadoA),p=st.partes.find(p=>p.tareaId===t.id);return"<tr><td>"+t.fecha+"</td><td>"+(t.tipo||"")+"</td><td>"+(c.nombre||"")+"</td><td>"+(o.nombre||"")+"</td><td>"+t.titulo+"</td><td>"+t.estado+"</td><td>"+(t.dieta?t.dieta+" \u20ac":"—")+"</td><td>"+(p?p.horas+"h":"—")+"</td></tr>";}).join("")
-      +"</tbody></table><p><b>Total dietas: "+td.toFixed(2)+" \u20ac — Total tareas: "+tm.length+"</b></p></body></html>");
+    mkPDF("<!DOCTYPE html><html><head><meta charset='utf-8'><style>body{font-family:Arial;margin:20px;font-size:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:5px}th{background:#f0f0f0}</style></head><body><h2>GARPI S.L. \u2014 Informe: "+MONTHS[calM]+" "+calY+"</h2><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Cliente</th><th>Operario</th><th>Trabajo</th><th>Estado</th><th>Dieta</th><th>Horas</th></tr></thead><tbody>"+tm.map(t=>{const c=gc(t.clienteId),o=gu(t.asignadoA),p=st.partes.find(p=>p.tareaId===t.id);return"<tr><td>"+t.fecha+"</td><td>"+(t.tipo||"")+"</td><td>"+(c.nombre||"")+"</td><td>"+(o.nombre||"")+"</td><td>"+t.titulo+"</td><td>"+t.estado+"</td><td>"+(t.dieta?t.dieta+" \u20ac":"\u2014")+"</td><td>"+(p?p.horas+"h":"\u2014")+"</td></tr>";}).join("")+"</tbody></table><p><b>Total dietas: "+td.toFixed(2)+" \u20ac \u2014 Total tareas: "+tm.length+"</b></p></body></html>");
   };
 
   const pdfDietas=()=>{
     const dt=st.tareas.filter(t=>t.dieta&&parseFloat(t.dieta)>0);
     const tot=dt.reduce((s,t)=>s+(parseFloat(t.dieta)||0),0);
-    mkPDF("<!DOCTYPE html><html><head><meta charset='utf-8'><style>body{font-family:Arial;margin:20px;font-size:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:5px}th{background:#f0f0f0}</style></head><body>"
-      +"<h2>GARPI S.L. — Informe de dietas</h2>"
-      +"<table><thead><tr><th>Fecha</th><th>Mes</th><th>Operario</th><th>Cliente</th><th>Trabajo</th><th>Dieta</th></tr></thead><tbody>"
-      +dt.map(t=>{const[y,m]=t.fecha.split("-").map(Number);const c=gc(t.clienteId),o=gu(t.asignadoA);return"<tr><td>"+t.fecha+"</td><td>"+MONTHS[m-1]+" "+y+"</td><td>"+(o.nombre||"")+"</td><td>"+(c.nombre||"")+"</td><td>"+t.titulo+"</td><td>"+t.dieta+" \u20ac</td></tr>";}).join("")
-      +"</tbody></table><p><b>Total: "+tot.toFixed(2)+" \u20ac</b></p></body></html>");
+    mkPDF("<!DOCTYPE html><html><head><meta charset='utf-8'><style>body{font-family:Arial;margin:20px;font-size:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:5px}th{background:#f0f0f0}</style></head><body><h2>GARPI S.L. \u2014 Informe de dietas</h2><table><thead><tr><th>Fecha</th><th>Mes</th><th>Operario</th><th>Cliente</th><th>Trabajo</th><th>Dieta</th></tr></thead><tbody>"+dt.map(t=>{const[y,m]=t.fecha.split("-").map(Number);const c=gc(t.clienteId),o=gu(t.asignadoA);return"<tr><td>"+t.fecha+"</td><td>"+MONTHS[m-1]+" "+y+"</td><td>"+(o.nombre||"")+"</td><td>"+(c.nombre||"")+"</td><td>"+t.titulo+"</td><td>"+t.dieta+" \u20ac</td></tr>";}).join("")+"</tbody></table><p><b>Total: "+tot.toFixed(2)+" \u20ac</b></p></body></html>");
   };
 
   const renderTabCh=(secs,showTk)=>secs.map(s=>{
@@ -416,15 +343,14 @@ export default function App(){
             </tr></thead>
             <tbody>
               {s.items.map((item,i)=>{
-                const desc=typeof item==="object"?item.d:item;
-                const frec=typeof item==="object"?item.f:null;
+                const desc=typeof item==="object"?item.d:item,frec=typeof item==="object"?item.f:null;
                 return(
                   <tr key={i}>
                     {hf&&<td style={{padding:"5px 8px",border:"0.5px solid #ddd",textAlign:"center",color:C.gray,fontSize:11}}>{frec}</td>}
                     <td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{desc}{i===0&&showTk&&s.ticket&&<span style={{fontSize:10,color:C.primary,marginLeft:4}}>(adjuntar ticket)</span>}</td>
                     <td style={{padding:"5px 8px",border:"0.5px solid #ddd",textAlign:"center"}}><input type="checkbox" checked={!!mf.checks[s.id+"_"+i+"_si"]} onChange={e=>updCh(s.id+"_"+i+"_si",e.target.checked)}/></td>
                     <td style={{padding:"5px 8px",border:"0.5px solid #ddd",textAlign:"center"}}><input type="checkbox" checked={!!mf.checks[s.id+"_"+i+"_no"]} onChange={e=>updCh(s.id+"_"+i+"_no",e.target.checked)}/></td>
-                    <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf.checks[s.id+"_"+i+"_obs"]||""} onChange={e=>updCh(s.id+"_"+i+"_obs",e.target.value)} style={{width:"100%",border:"none",outline:"1px solid #eee",fontSize:12,background:"#fff",borderRadius:3,padding:"2px 4px"}}/></td>
+                    <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf.checks[s.id+"_"+i+"_obs"]||""} onChange={e=>updCh(s.id+"_"+i+"_obs",e.target.value)} style={{width:"100%",border:"none",outline:"1px solid #eee",fontSize:12,background:"#fff",borderRadius:3,padding:"2px 4px",boxSizing:"border-box"}}/></td>
                   </tr>
                 );
               })}
@@ -447,7 +373,7 @@ export default function App(){
   if(!sess){
     return(
       <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#f5f5f3"}}>
-        <div style={{background:"#fff",borderRadius:12,border:"0.5px solid #ddd",padding:"32px 28px",width:320}}>
+        <div style={{background:"#fff",borderRadius:12,border:"0.5px solid #ddd",padding:"32px 28px",width:320,boxSizing:"border-box"}}>
           <div style={{textAlign:"center",marginBottom:24}}>
             <div style={{fontWeight:500,fontSize:22,color:C.navy}}>GARPI S.L.</div>
             <div style={{fontSize:12,color:C.gray,marginTop:4}}>Gestión de Partes de Trabajo</div>
@@ -466,8 +392,9 @@ export default function App(){
   const opNav=[["dashboard","Mi panel"],["mis_tareas","Mis tareas"],["mis_partes","Correctivos"],["mis_partesM","Preventivos"],["fotos","Mis fotos"]];
   const nav=sess.rol==="admin"?adminNav:opNav;
 
-  const render=()=>{
+  const goSec=(key)=>{setSec(key);setSelT(null);setSelDay(null);setMenuOpen(false);};
 
+  const render=()=>{
     if(sec==="dashboard"){
       const pend=myT.filter(t=>t.estado==="pendiente").length,enc=myT.filter(t=>t.estado==="en_curso").length,comp=myT.filter(t=>t.estado==="completada"||t.estado==="firmado").length;
       return(
@@ -475,10 +402,7 @@ export default function App(){
           <h2 style={{margin:"0 0 20px",fontWeight:500,fontSize:20}}>Panel {sess.rol==="admin"?"de administración":"del operario"}</h2>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:10,marginBottom:24}}>
             {[[C.orangeLight,C.orange,"Pendientes",pend],[C.primaryLight,C.primary,"En curso",enc],[C.successLight,C.success,"Completadas",comp],[C.purpleLight,C.purple,"Partes",myP.length+myM.length]].map(([bg,col,lbl,val])=>(
-              <div key={lbl} style={{background:bg,borderRadius:10,padding:"14px 16px"}}>
-                <div style={{fontSize:12,color:col,marginBottom:4}}>{lbl}</div>
-                <div style={{fontSize:28,fontWeight:500,color:col}}>{val}</div>
-              </div>
+              <div key={lbl} style={{background:bg,borderRadius:10,padding:"14px 16px"}}><div style={{fontSize:12,color:col,marginBottom:4}}>{lbl}</div><div style={{fontSize:28,fontWeight:500,color:col}}>{val}</div></div>
             ))}
           </div>
           <h3 style={{fontWeight:500,fontSize:15,margin:"0 0 10px"}}>Próximas tareas</h3>
@@ -520,7 +444,7 @@ export default function App(){
               </div>
               <div style={{display:"flex",gap:8}}>
                 <button onClick={crearTarea} style={{padding:"8px 14px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:13,cursor:"pointer"}}>Crear tarea</button>
-                <button onClick={()=>setShowNT(false)} style={{padding:"8px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer"}}>Cancelar</button>
+                <button onClick={()=>setShowNT(false)} style={{padding:"8px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.gray}}>Cancelar</button>
               </div>
             </div>
           )}
@@ -540,7 +464,7 @@ export default function App(){
               </div>
               <div style={{display:"flex",gap:8}}>
                 <button onClick={()=>{dispatch({type:"UPD_TAREA",t:editT});setEditT(null);}} style={{padding:"8px 14px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:13,cursor:"pointer"}}>Guardar</button>
-                <button onClick={()=>setEditT(null)} style={{padding:"8px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer"}}>Cancelar</button>
+                <button onClick={()=>setEditT(null)} style={{padding:"8px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.gray}}>Cancelar</button>
               </div>
             </div>
           )}
@@ -561,7 +485,7 @@ export default function App(){
       return(
         <div>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-            <button onClick={()=>{setSec("mis_tareas");setSelT(null);}} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #ddd",background:"#fff",fontSize:12,cursor:"pointer"}}>← Volver</button>
+            <button onClick={()=>{setSec("mis_tareas");setSelT(null);}} style={{padding:"6px 14px",borderRadius:6,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.primary}}>← Volver</button>
             <h2 style={{margin:0,fontWeight:500,fontSize:18}}>Parte correctivo</h2>
           </div>
           <div style={{background:C.primaryLight,borderRadius:8,padding:"10px 14px",marginBottom:14,fontSize:13}}>
@@ -578,7 +502,7 @@ export default function App(){
                 <input placeholder="Materiales utilizados" value={l.mat} onChange={e=>updL(i,"mat",e.target.value)} style={IS}/>
               </div>
             ))}
-            <button onClick={addL} style={{fontSize:12,padding:"6px 12px",borderRadius:6,border:"1px dashed #aaa",background:"#fff",cursor:"pointer"}}>+ Añadir línea</button>
+            <button onClick={addL} style={{fontSize:12,padding:"6px 12px",borderRadius:6,border:"1px dashed #aaa",background:"#fff",cursor:"pointer",color:C.gray}}>+ Añadir línea</button>
           </Box>
           <Box title="Pie del parte">
             <textarea placeholder="Observaciones" value={pf.obs} onChange={e=>setPf(f=>({...f,obs:e.target.value}))} style={{...IS,height:60,resize:"vertical",marginBottom:8}}/>
@@ -586,11 +510,9 @@ export default function App(){
           </Box>
           <Box title="Firmas">
             <SigPad label="Firma del cliente" onSave={d=>setPf(f=>({...f,fCli:d}))}/>
-            {pf.fCli&&<div style={{fontSize:12,color:C.success,margin:"2px 0 10px"}}>✓ Firma del cliente guardada</div>}
             <SigPad label="Firma del trabajador / empresa" onSave={d=>setPf(f=>({...f,fTrab:d}))}/>
-            {pf.fTrab&&<div style={{fontSize:12,color:C.success,margin:"2px 0"}}>✓ Firma del trabajador guardada</div>}
           </Box>
-          <button onClick={()=>subC(selT)} style={{width:"100%",padding:"12px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:14,fontWeight:500,cursor:"pointer"}}>Guardar parte correctivo</button>
+          <button onClick={()=>subC(selT)} style={{width:"100%",padding:"12px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:14,fontWeight:500,cursor:"pointer",marginTop:8}}>Guardar parte correctivo</button>
         </div>
       );
     }
@@ -600,14 +522,14 @@ export default function App(){
       return(
         <div>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-            <button onClick={()=>{setSec("mis_tareas");setSelT(null);}} style={{padding:"4px 10px",borderRadius:6,border:"1px solid #ddd",background:"#fff",fontSize:12,cursor:"pointer"}}>← Volver</button>
-            <h2 style={{margin:0,fontWeight:500,fontSize:18}}>Ficha de Mantenimiento Mensual</h2>
+            <button onClick={()=>{setSec("mis_tareas");setSelT(null);}} style={{padding:"6px 14px",borderRadius:6,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.primary}}>← Volver</button>
+            <h2 style={{margin:0,fontWeight:500,fontSize:18}}>Ficha de Mantenimiento</h2>
           </div>
           <Box title="Cabecera">
             <div style={{marginBottom:12}}>
               <div style={{fontSize:12,color:C.gray,marginBottom:6}}>Tipo de mantenimiento preventivo</div>
               <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {[["calderas","🔥 Sala de Calderas"],["grupos","💧 Grupos de Presión"],["legionella","🧪 Legionella"],["otros","📋 Otros"]].map(([val,lbl])=>(
+                {[["calderas","🔥 Calderas"],["grupos","💧 Grupos Presión"],["legionella","🧪 Legionella"],["otros","📋 Otros"]].map(([val,lbl])=>(
                   <button key={val} onClick={()=>chgTipo(val)} style={{padding:"7px 12px",borderRadius:8,border:"1.5px solid "+(mf.tipoMant===val?C.primary:"#ddd"),background:mf.tipoMant===val?C.primaryLight:"#fff",color:mf.tipoMant===val?C.primary:C.gray,fontSize:13,cursor:"pointer",fontWeight:mf.tipoMant===val?500:400}}>{lbl}</button>
                 ))}
               </div>
@@ -625,54 +547,24 @@ export default function App(){
               {renderTabCh(SC,true)}
               <Box title="PARÁMETROS OPERATIVOS">
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-                  <thead><tr>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"left"}}>Parámetro</th>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Control Planta (°C)</th>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Real Equipos (°C)</th>
-                  </tr></thead>
-                  <tbody>
-                    {[["Temp. acumulación ACS","tAC","tAR"],["Temp. impulsión primario","tIC","tIR"],["Temp. retorno ACS","tRC","tRR"]].map(([lbl,k1,k2])=>(
-                      <tr key={lbl}>
-                        <td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{lbl}</td>
-                        <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k1]} onChange={e=>setMf(f=>({...f,[k1]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td>
-                        <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k2]} onChange={e=>setMf(f=>({...f,[k2]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  <thead><tr><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"left"}}>Parámetro</th><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Control Planta (°C)</th><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Real Equipos (°C)</th></tr></thead>
+                  <tbody>{[["Temp. acumulación ACS","tAC","tAR"],["Temp. impulsión primario","tIC","tIR"],["Temp. retorno ACS","tRC","tRR"]].map(([lbl,k1,k2])=>(
+                    <tr key={lbl}><td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{lbl}</td><td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k1]} onChange={e=>setMf(f=>({...f,[k1]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td><td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k2]} onChange={e=>setMf(f=>({...f,[k2]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td></tr>
+                  ))}</tbody>
                 </table>
               </Box>
               <Box title="LECTURAS CONSUMO Y CORRECTORES">
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,marginBottom:10}}>
-                  <thead><tr>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight}}>Concepto</th>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Contador 1 (m³)</th>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Contador 2 (m³)</th>
-                  </tr></thead>
-                  <tbody>
-                    {[["Contador gas","g1","g2"],["Libre 1","l1a","l1b"],["Libre 2","l2a","l2b"]].map(([lbl,k1,k2])=>(
-                      <tr key={lbl}>
-                        <td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{lbl}</td>
-                        <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k1]} onChange={e=>setMf(f=>({...f,[k1]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td>
-                        <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k2]} onChange={e=>setMf(f=>({...f,[k2]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  <thead><tr><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight}}>Concepto</th><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Contador 1 (m³)</th><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Contador 2 (m³)</th></tr></thead>
+                  <tbody>{[["Contador gas","g1","g2"],["Libre 1","l1a","l1b"],["Libre 2","l2a","l2b"]].map(([lbl,k1,k2])=>(
+                    <tr key={lbl}><td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{lbl}</td><td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k1]} onChange={e=>setMf(f=>({...f,[k1]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td><td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k2]} onChange={e=>setMf(f=>({...f,[k2]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td></tr>
+                  ))}</tbody>
                 </table>
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-                  <thead><tr>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight}}>Corrector</th>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Corrector 1 (MWh)</th>
-                    <th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Corrector 2 (MWh)</th>
-                  </tr></thead>
-                  <tbody>
-                    {[["Energía 1","c1a","c1b"],["Energía 2","c2a","c2b"]].map(([lbl,k1,k2])=>(
-                      <tr key={lbl}>
-                        <td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{lbl}</td>
-                        <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k1]} onChange={e=>setMf(f=>({...f,[k1]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td>
-                        <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k2]} onChange={e=>setMf(f=>({...f,[k2]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  <thead><tr><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight}}>Corrector</th><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Corrector 1 (MWh)</th><th style={{padding:"5px 8px",border:"0.5px solid #ddd",background:C.grayLight,textAlign:"center"}}>Corrector 2 (MWh)</th></tr></thead>
+                  <tbody>{[["Energía 1","c1a","c1b"],["Energía 2","c2a","c2b"]].map(([lbl,k1,k2])=>(
+                    <tr key={lbl}><td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{lbl}</td><td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k1]} onChange={e=>setMf(f=>({...f,[k1]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td><td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf[k2]} onChange={e=>setMf(f=>({...f,[k2]:e.target.value}))} style={{width:"100%",border:"none",outline:"none",fontSize:13,textAlign:"center",background:"transparent"}}/></td></tr>
+                  ))}</tbody>
                 </table>
               </Box>
             </div>
@@ -687,11 +579,9 @@ export default function App(){
           )}
           <Box title="Firmas">
             <SigPad label="Firma del cliente" onSave={d=>setMf(f=>({...f,firmaTec:d}))}/>
-            {mf.firmaTec&&<div style={{fontSize:12,color:C.success,margin:"2px 0 10px"}}>✓ Firma del cliente guardada</div>}
             <SigPad label="Firma del operario-mantenedor" onSave={d=>setMf(f=>({...f,firmaOp:d}))}/>
-            {mf.firmaOp&&<div style={{fontSize:12,color:C.success,margin:"2px 0"}}>✓ Firma del operario guardada</div>}
           </Box>
-          <button onClick={()=>subM(selT)} style={{width:"100%",padding:"12px",borderRadius:8,border:"none",background:C.purple,color:"#fff",fontSize:14,fontWeight:500,cursor:"pointer"}}>Guardar ficha de mantenimiento</button>
+          <button onClick={()=>subM(selT)} style={{width:"100%",padding:"12px",borderRadius:8,border:"none",background:C.purple,color:"#fff",fontSize:14,fontWeight:500,cursor:"pointer",marginTop:8}}>Guardar ficha de mantenimiento</button>
         </div>
       );
     }
@@ -709,22 +599,13 @@ export default function App(){
             <h2 style={{margin:0,fontWeight:500,fontSize:20}}>Calendario</h2>
             <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
               <button onClick={pM} style={{padding:"5px 10px",borderRadius:6,border:"1px solid #ddd",background:"#fff",cursor:"pointer"}}>◀</button>
-              <span style={{fontWeight:500,fontSize:14,minWidth:140,textAlign:"center"}}>{MONTHS[calM]} {calY}</span>
+              <span style={{fontWeight:500,fontSize:14,minWidth:130,textAlign:"center"}}>{MONTHS[calM]} {calY}</span>
               <button onClick={nM} style={{padding:"5px 10px",borderRadius:6,border:"1px solid #ddd",background:"#fff",cursor:"pointer"}}>▶</button>
-              <select value={calY} onChange={e=>{setCalY(+e.target.value);setSelDay(null);}} style={{padding:"5px 8px",borderRadius:6,border:"1px solid #ddd",fontSize:13}}>
-                {[2024,2025,2026,2027,2028].map(y=><option key={y} value={y}>{y}</option>)}
-              </select>
-              <button onClick={pdfMensual} style={{padding:"5px 10px",borderRadius:6,border:"none",background:C.primary,color:"#fff",fontSize:12,cursor:"pointer"}}>Informe PDF</button>
+              <select value={calY} onChange={e=>{setCalY(+e.target.value);setSelDay(null);}} style={{padding:"5px 8px",borderRadius:6,border:"1px solid #ddd",fontSize:13}}>{[2024,2025,2026,2027,2028].map(y=><option key={y} value={y}>{y}</option>)}</select>
+              <button onClick={pdfMensual} style={{padding:"5px 10px",borderRadius:6,border:"none",background:C.primary,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>
             </div>
           </div>
-          <div style={{display:"flex",gap:8,marginBottom:10,flexWrap:"wrap"}}>
-            {[[C.orangeLight,C.orange,"Pendiente"],[C.successLight,C.success,"Completada (correctivo)"],[C.purpleLight,C.purple,"Completada (preventivo)"],[C.primaryLight,C.primary,"En curso"]].map(([bg,col,lbl])=>(
-              <span key={lbl} style={{fontSize:11,padding:"2px 8px",borderRadius:10,background:bg,color:col}}>{lbl}</span>
-            ))}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3,marginBottom:4}}>
-            {WDAYS.map(d=><div key={d} style={{textAlign:"center",fontSize:11,color:C.gray,fontWeight:500,padding:"4px 0"}}>{d}</div>)}
-          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3,marginBottom:4}}>{WDAYS.map(d=><div key={d} style={{textAlign:"center",fontSize:11,color:C.gray,fontWeight:500,padding:"4px 0"}}>{d}</div>)}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3}}>
             {days.map((day,i)=>{
               if(!day)return <div key={i}/>;
@@ -741,30 +622,27 @@ export default function App(){
           {selDay&&(
             <div style={{marginTop:16,background:"#fff",border:"0.5px solid #ddd",borderRadius:10,padding:16}}>
               <h3 style={{margin:"0 0 12px",fontWeight:500,fontSize:15}}>{selDay} de {MONTHS[calM]} {calY} — {dT(selDay).length} actuación(es)</h3>
-              {dT(selDay).length===0
-                ?<div style={{fontSize:13,color:C.gray}}>Sin tareas.</div>
-                :dT(selDay).map(t=>{
-                  const cli=gc(t.clienteId),op=gu(t.asignadoA),parte=st.partes.find(p=>p.tareaId===t.id),partM=st.partesM.find(p=>p.tareaId===t.id);
-                  return(
-                    <div key={t.id} style={{background:C.grayLight,borderRadius:8,padding:"10px 12px",marginBottom:10}}>
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                        <div>
-                          <div style={{fontWeight:500,fontSize:14}}>{t.titulo}</div>
-                          <div style={{marginTop:4,display:"flex",gap:6}}><EBdg estado={t.estado}/><TBdg tipo={t.tipo||"correctivo"}/></div>
-                          <div style={{fontSize:12,color:C.gray,marginTop:4}}>Cliente: {cli.nombre} · Operario: {op.nombre}</div>
-                          {t.dieta&&<div style={{fontSize:12,color:C.warning}}>Dieta: {t.dieta} €</div>}
-                          {parte&&<div style={{fontSize:12,color:C.gray}}>Horas: {parte.horas}h · Obs: {parte.observaciones}</div>}
-                          {partM&&<div style={{fontSize:12,color:C.purple,marginTop:4}}>Ficha preventivo — Emplazamiento: {partM.emplazamiento}</div>}
-                        </div>
-                        <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                          {parte&&sess.rol==="admin"&&<button onClick={()=>pdfC(parte)} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.danger,color:"#fff",fontSize:11,cursor:"pointer"}}>PDF correctivo</button>}
-                          {partM&&sess.rol==="admin"&&<button onClick={()=>pdfM(partM)} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.purple,color:"#fff",fontSize:11,cursor:"pointer"}}>PDF preventivo</button>}
-                        </div>
+              {dT(selDay).length===0?<div style={{fontSize:13,color:C.gray}}>Sin tareas.</div>:dT(selDay).map(t=>{
+                const cli=gc(t.clienteId),op=gu(t.asignadoA),parte=st.partes.find(p=>p.tareaId===t.id),partM=st.partesM.find(p=>p.tareaId===t.id);
+                return(
+                  <div key={t.id} style={{background:C.grayLight,borderRadius:8,padding:"10px 12px",marginBottom:10}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                      <div>
+                        <div style={{fontWeight:500,fontSize:14}}>{t.titulo}</div>
+                        <div style={{marginTop:4,display:"flex",gap:6}}><EBdg estado={t.estado}/><TBdg tipo={t.tipo||"correctivo"}/></div>
+                        <div style={{fontSize:12,color:C.gray,marginTop:4}}>Cliente: {cli.nombre} · Operario: {op.nombre}</div>
+                        {t.dieta&&<div style={{fontSize:12,color:C.warning}}>Dieta: {t.dieta} €</div>}
+                        {parte&&<div style={{fontSize:12,color:C.gray}}>Horas: {parte.horas}h · Obs: {parte.observaciones}</div>}
+                        {partM&&<div style={{fontSize:12,color:C.purple,marginTop:4}}>Ficha preventivo — Emplazamiento: {partM.emplazamiento}</div>}
+                      </div>
+                      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                        {parte&&sess.rol==="admin"&&<button onClick={()=>pdfC(parte)} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.danger,color:"#fff",fontSize:11,cursor:"pointer"}}>PDF correctivo</button>}
+                        {partM&&sess.rol==="admin"&&<button onClick={()=>pdfM(partM)} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.purple,color:"#fff",fontSize:11,cursor:"pointer"}}>PDF preventivo</button>}
                       </div>
                     </div>
-                  );
-                })
-              }
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -776,22 +654,14 @@ export default function App(){
         <div>
           <h2 style={{margin:"0 0 16px",fontWeight:500,fontSize:20}}>Partes correctivos</h2>
           {myP.length===0&&<div style={{fontSize:14,color:C.gray}}>No hay partes correctivos aún.</div>}
-          {myP.map(p=>{
-            const cli=gc(p.clienteId),op=gu(p.operarioId),tarea=gt(p.tareaId);
-            return(
-              <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:10}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                  <div>
-                    <div style={{fontWeight:500,fontSize:14}}>Parte #{p.id} — {p.obra}</div>
-                    <div style={{fontSize:12,color:C.gray,marginTop:2}}>{p.fecha} · {op.nombre}</div>
-                    {tarea.dieta&&<div style={{fontSize:12,color:C.warning}}>Dieta: {tarea.dieta} €</div>}
-                    <div style={{marginTop:6}}><EBdg estado={p.estado}/></div>
-                  </div>
-                  {sess.rol==="admin"&&<button onClick={()=>pdfC(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.danger,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
-                </div>
+          {myP.map(p=>{const cli=gc(p.clienteId),op=gu(p.operarioId),tarea=gt(p.tareaId);return(
+            <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                <div><div style={{fontWeight:500,fontSize:14}}>Parte #{p.id} — {p.obra}</div><div style={{fontSize:12,color:C.gray,marginTop:2}}>{p.fecha} · {op.nombre}</div>{tarea.dieta&&<div style={{fontSize:12,color:C.warning}}>Dieta: {tarea.dieta} €</div>}<div style={{marginTop:6}}><EBdg estado={p.estado}/></div></div>
+                {sess.rol==="admin"&&<button onClick={()=>pdfC(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.danger,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
               </div>
-            );
-          })}
+            </div>
+          );})}
         </div>
       );
     }
@@ -801,22 +671,14 @@ export default function App(){
         <div>
           <h2 style={{margin:"0 0 16px",fontWeight:500,fontSize:20}}>Fichas preventivas</h2>
           {myM.length===0&&<div style={{fontSize:14,color:C.gray}}>No hay fichas preventivas aún.</div>}
-          {myM.map(p=>{
-            const cli=gc(p.clienteId),op=gu(p.operarioId);
-            return(
-              <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:10}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                  <div>
-                    <div style={{fontWeight:500,fontSize:14}}>Ficha #{p.id} — {cli.nombre}</div>
-                    <div style={{fontSize:12,color:C.gray,marginTop:2}}>{p.fecha} · {op.nombre}</div>
-                    <div style={{fontSize:12,color:C.gray}}>Emplazamiento: {p.emplazamiento}</div>
-                    <div style={{marginTop:6,display:"flex",gap:6}}><EBdg estado={p.estado}/><TBdg tipo="preventivo"/></div>
-                  </div>
-                  {sess.rol==="admin"&&<button onClick={()=>pdfM(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.purple,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
-                </div>
+          {myM.map(p=>{const cli=gc(p.clienteId),op=gu(p.operarioId);return(
+            <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                <div><div style={{fontWeight:500,fontSize:14}}>Ficha #{p.id} — {cli.nombre}</div><div style={{fontSize:12,color:C.gray,marginTop:2}}>{p.fecha} · {op.nombre}</div><div style={{fontSize:12,color:C.gray}}>Emplazamiento: {p.emplazamiento}</div><div style={{marginTop:6,display:"flex",gap:6}}><EBdg estado={p.estado}/><TBdg tipo="preventivo"/></div></div>
+                {sess.rol==="admin"&&<button onClick={()=>pdfM(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.purple,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
               </div>
-            );
-          })}
+            </div>
+          );})}
         </div>
       );
     }
@@ -829,33 +691,26 @@ export default function App(){
           <h2 style={{margin:"0 0 12px",fontWeight:500,fontSize:20}}>Gestión de fotos</h2>
           <div style={{fontSize:13,color:C.gray,marginBottom:16}}>{sess.rol==="admin"?"Descarga disponible para admin.":"Sube las fotos del trabajo."}</div>
           {allP.length===0&&<div style={{fontSize:13,color:C.gray}}>No hay partes aún.</div>}
-          {allP.map(p=>{
-            const cli=gc(p.clienteId),fotos=p.fotos||[],isM=p.tipo==="preventivo";
-            return(
-              <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:12}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-                  <div style={{fontWeight:500,fontSize:14}}>{cli.nombre} — {p.fecha}</div>
-                  <TBdg tipo={p.tipo||"correctivo"}/>
+          {allP.map(p=>{const cli=gc(p.clienteId),fotos=p.fotos||[],isM=p.tipo==="preventivo";return(
+            <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:12}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><div style={{fontWeight:500,fontSize:14}}>{cli.nombre} — {p.fecha}</div><TBdg tipo={p.tipo||"correctivo"}/></div>
+              <div style={{fontSize:12,color:C.gray,marginBottom:8}}>{isM?"Ficha preventiva":"Parte correctivo"} #{p.id} · {fotos.length} foto(s)</div>
+              <label style={{display:"inline-block",padding:"6px 12px",borderRadius:7,border:"1px dashed #aaa",fontSize:12,cursor:"pointer",marginBottom:8,color:C.gray}}>
+                + Subir foto(s)
+                <input type="file" accept="image/*" capture="environment" multiple style={{display:"none"}} onChange={e=>{Array.from(e.target.files).forEach(f=>subFoto(p.id,isM,f));e.target.value="";}}/>
+              </label>
+              {fotos.length===0?<div style={{fontSize:12,color:C.gray}}>Sin fotos</div>:(
+                <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+                  {fotos.map((f,i)=>(
+                    <div key={i} style={{position:"relative"}}>
+                      <img src={f.data} style={{width:80,height:80,objectFit:"cover",borderRadius:6,border:"0.5px solid #ddd"}} alt={f.name}/>
+                      {sess.rol==="admin"&&<a href={f.data} download={f.name} style={{position:"absolute",bottom:2,right:2,background:C.primary,color:"#fff",borderRadius:4,padding:"1px 5px",fontSize:10,textDecoration:"none"}}>↓</a>}
+                    </div>
+                  ))}
                 </div>
-                <div style={{fontSize:12,color:C.gray,marginBottom:8}}>{isM?"Ficha preventiva":"Parte correctivo"} #{p.id} · {fotos.length} foto(s)</div>
-                <label style={{display:"inline-block",padding:"6px 12px",borderRadius:7,border:"1px dashed #aaa",fontSize:12,cursor:"pointer",marginBottom:8}}>
-                  + Subir foto(s)
-                  <input type="file" accept="image/*" capture="environment" multiple style={{display:"none"}} onChange={e=>{Array.from(e.target.files).forEach(f=>subFoto(p.id,isM,f));e.target.value="";}}/>
-                </label>
-                {fotos.length===0
-                  ?<div style={{fontSize:12,color:C.gray}}>Sin fotos</div>
-                  :<div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-                    {fotos.map((f,i)=>(
-                      <div key={i} style={{position:"relative"}}>
-                        <img src={f.data} style={{width:80,height:80,objectFit:"cover",borderRadius:6,border:"0.5px solid #ddd"}} alt={f.name}/>
-                        {sess.rol==="admin"&&<a href={f.data} download={f.name} style={{position:"absolute",bottom:2,right:2,background:C.primary,color:"#fff",borderRadius:4,padding:"1px 5px",fontSize:10,textDecoration:"none"}}>↓</a>}
-                      </div>
-                    ))}
-                  </div>
-                }
-              </div>
-            );
-          })}
+              )}
+            </div>
+          );})}
         </div>
       );
     }
@@ -878,7 +733,7 @@ export default function App(){
               <div style={{marginBottom:8}}><input placeholder="Contraseña inicial" value={no.password} onChange={e=>setNo(f=>({...f,password:e.target.value}))} style={IS}/></div>
               <div style={{display:"flex",gap:8}}>
                 <button onClick={()=>{if(!no.nombre||!no.usuario||!no.password)return;dispatch({type:"ADD_USER",u:{...no,id:Date.now(),rol:"operario"}});setShowNO(false);setNo({nombre:"",usuario:"",password:""});}} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:13,cursor:"pointer"}}>Crear</button>
-                <button onClick={()=>setShowNO(false)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer"}}>Cancelar</button>
+                <button onClick={()=>setShowNO(false)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.gray}}>Cancelar</button>
               </div>
             </div>
           )}
@@ -890,20 +745,16 @@ export default function App(){
               <div style={{marginBottom:8}}><input placeholder="Nueva contraseña" value={editOp.password} onChange={e=>setEditOp(f=>({...f,password:e.target.value}))} style={IS}/></div>
               <div style={{display:"flex",gap:8}}>
                 <button onClick={()=>{if(!editOp.nombre||!editOp.usuario)return;dispatch({type:"UPD_USER",u:editOp});setEditOp(null);}} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:13,cursor:"pointer"}}>Guardar</button>
-                <button onClick={()=>setEditOp(null)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer"}}>Cancelar</button>
+                <button onClick={()=>setEditOp(null)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:13,cursor:"pointer",color:C.gray}}>Cancelar</button>
               </div>
             </div>
           )}
           {ops.map(u=>(
             <div key={u.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:"12px 14px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div>
-                <div style={{fontWeight:500,fontSize:14}}>{u.nombre}</div>
-                <div style={{fontSize:12,color:C.gray}}>Usuario: {u.usuario}</div>
-                <div style={{fontSize:12,color:C.primary,marginTop:2}}>{st.tareas.filter(t=>t.asignadoA===u.id).length} tarea(s) · {st.partes.filter(p=>p.operarioId===u.id).length} correctivos · {st.partesM.filter(p=>p.operarioId===u.id).length} preventivos</div>
-              </div>
+              <div><div style={{fontWeight:500,fontSize:14}}>{u.nombre}</div><div style={{fontSize:12,color:C.gray}}>Usuario: {u.usuario}</div><div style={{fontSize:12,color:C.primary,marginTop:2}}>{st.tareas.filter(t=>t.asignadoA===u.id).length} tarea(s)</div></div>
               <div style={{display:"flex",gap:6}}>
                 <button onClick={()=>{setEditOp({id:u.id,nombre:u.nombre,usuario:u.usuario,password:""});setShowNO(false);}} style={{padding:"5px 10px",borderRadius:7,border:"1px solid "+C.primary,background:"#fff",color:C.primary,fontSize:12,cursor:"pointer"}}>Editar</button>
-                <button onClick={()=>{if(window.confirm("¿Eliminar a "+u.nombre+"?"))dispatch({type:"DEL_USER",id:u.id});}} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.dangerLight,color:C.danger,fontSize:12,cursor:"pointer"}}>Eliminar</button>
+                <button onClick={()=>dispatch({type:"DEL_USER",id:u.id})} style={{padding:"5px 10px",borderRadius:7,border:"none",background:C.dangerLight,color:C.danger,fontSize:12,cursor:"pointer"}}>Eliminar</button>
               </div>
             </div>
           ))}
@@ -912,24 +763,23 @@ export default function App(){
     }
 
     if(sec==="dietas") return <Dietas st={st} gc={gc} gu={gu} pdfFn={pdfDietas}/>;
-
     return null;
   };
 
   return(
     <div style={{display:"flex",minHeight:"100vh",background:"#f5f5f3",fontFamily:"system-ui,sans-serif"}}>
-      <div style={{width:172,background:C.navy,minHeight:"100vh",padding:"16px 0",flexShrink:0}}>
+      <div style={{width:172,background:C.navy,minHeight:"100vh",padding:"16px 0",flexShrink:0,position:"sticky",top:0,height:"100vh",overflowY:"auto"}}>
         <div style={{padding:"0 14px 16px",borderBottom:"1px solid rgba(255,255,255,0.1)"}}>
           <div style={{fontWeight:500,color:"#fff",fontSize:16}}>GARPI S.L.</div>
           <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:2}}>{sess.nombre}</div>
           <span style={{fontSize:10,padding:"2px 7px",borderRadius:10,background:"rgba(255,255,255,0.1)",color:"#B5D4F4",marginTop:4,display:"inline-block"}}>{sess.rol==="admin"?"Administrador":"Operario"}</span>
         </div>
         {nav.map(([key,label])=>(
-          <div key={key} onClick={()=>{setSec(key);setSelT(null);setSelDay(null);}} style={{padding:"10px 14px",cursor:"pointer",fontSize:13,color:sec===key?"#fff":"rgba(255,255,255,0.55)",background:sec===key?"rgba(255,255,255,0.12)":"transparent",borderLeft:sec===key?"3px solid #378ADD":"3px solid transparent"}}>{label}</div>
+          <div key={key} onClick={()=>goSec(key)} style={{padding:"10px 14px",cursor:"pointer",fontSize:13,color:sec===key?"#fff":"rgba(255,255,255,0.55)",background:sec===key?"rgba(255,255,255,0.12)":"transparent",borderLeft:sec===key?"3px solid #378ADD":"3px solid transparent"}}>{label}</div>
         ))}
         <div onClick={doLogout} style={{padding:"10px 14px",cursor:"pointer",fontSize:12,color:"rgba(255,255,255,0.35)",marginTop:16}}>Cerrar sesión</div>
       </div>
-      <div style={{flex:1,padding:"24px 28px",overflowY:"auto",maxWidth:760}}>{render()}</div>
+      <div style={{flex:1,padding:"24px 28px",overflowY:"auto",maxWidth:760,boxSizing:"border-box"}}>{render()}</div>
     </div>
   );
 }
