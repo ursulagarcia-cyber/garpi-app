@@ -110,7 +110,7 @@ function SigPad({label,onSave}){
         onMouseDown={ds} onMouseMove={dm} onMouseUp={de} onTouchStart={ds} onTouchMove={dm} onTouchEnd={de}/>
       <div style={{display:"flex",gap:8,marginTop:6}}>
         <button onClick={clr} style={{fontSize:12,padding:"4px 10px",borderRadius:6,border:"1px solid #ccc",background:"#fff",cursor:"pointer"}}>Borrar</button>
-        {signed&&<button onClick={()=>onSave(ref.current.toDataURL())} style={{fontSize:12,padding:"4px 10px",borderRadius:6,border:"none",background:C.primary,color:"#fff",cursor:"pointer"}}>Guardar firma</button>}
+        {signed&&<button onClick={()=>onSave(ref.current.toDataURL())} style={{fontSize:12,padding:"4px 12px",borderRadius:6,border:"none",background:C.primary,color:"#fff",cursor:"pointer",fontWeight:500}}>Guardar firma ✓</button>}
       </div>
     </div>
   );
@@ -424,7 +424,7 @@ export default function App(){
                     <td style={{padding:"5px 8px",border:"0.5px solid #ddd"}}>{desc}{i===0&&showTk&&s.ticket&&<span style={{fontSize:10,color:C.primary,marginLeft:4}}>(adjuntar ticket)</span>}</td>
                     <td style={{padding:"5px 8px",border:"0.5px solid #ddd",textAlign:"center"}}><input type="checkbox" checked={!!mf.checks[s.id+"_"+i+"_si"]} onChange={e=>updCh(s.id+"_"+i+"_si",e.target.checked)}/></td>
                     <td style={{padding:"5px 8px",border:"0.5px solid #ddd",textAlign:"center"}}><input type="checkbox" checked={!!mf.checks[s.id+"_"+i+"_no"]} onChange={e=>updCh(s.id+"_"+i+"_no",e.target.checked)}/></td>
-                    <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf.checks[s.id+"_"+i+"_obs"]||""} onChange={e=>updCh(s.id+"_"+i+"_obs",e.target.value)} style={{width:"100%",border:"none",outline:"none",fontSize:12,background:"transparent"}}/></td>
+                    <td style={{padding:"4px 6px",border:"0.5px solid #ddd"}}><input value={mf.checks[s.id+"_"+i+"_obs"]||""} onChange={e=>updCh(s.id+"_"+i+"_obs",e.target.value)} style={{width:"100%",border:"none",outline:"1px solid #eee",fontSize:12,background:"#fff",borderRadius:3,padding:"2px 4px"}}/></td>
                   </tr>
                 );
               })}
@@ -490,8 +490,8 @@ export default function App(){
               </div>
             </div>
           ))}
-          {offline&&<div style={{marginTop:16,padding:"10px 14px",background:C.warningLight,borderRadius:8,fontSize:13,color:C.warning}}>⚠️ Modo sin cobertura activo.</div>}
-          <button onClick={()=>setOffline(v=>!v)} style={{marginTop:12,fontSize:11,padding:"4px 10px",borderRadius:6,border:"1px solid #ccc",background:"#fff",cursor:"pointer"}}>{offline?"Simular conexión":"Simular sin cobertura"}</button>
+          {offline&&<div style={{marginTop:16,padding:"10px 14px",background:C.warningLight,borderRadius:8,fontSize:13,color:C.warning}}>⚠️ Modo sin cobertura activo. Los datos se sincronizarán cuando haya conexión.</div>}
+          <button onClick={()=>setOffline(v=>!v)} style={{marginTop:12,fontSize:12,padding:"6px 12px",borderRadius:6,border:"1px solid #ccc",background:"#fff",cursor:"pointer",color:C.gray}}>{offline?"🟢 Simular conexión":"🔴 Simular sin cobertura"}</button>
         </div>
       );
     }
