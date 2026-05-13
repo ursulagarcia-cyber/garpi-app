@@ -320,7 +320,7 @@ export default function App(){
   const addL=()=>setPf(f=>({...f,lineas:[...f.lineas,{trab:"",mat:""}]}));
   const updL=(i,k,v)=>setPf(f=>{const l=[...f.lineas];l[i]={...l[i],[k]:v};return{...f,lineas:l};});
   const updCh=(k,v)=>setMf(f=>({...f,checks:{...f.checks,[k]:v}}));
-  const chgTipo=tipo=>{let ch={};if(tipo==="calderas")ch=initCh(SC);else if(tipo==="grupos")ch=initCh(SG);else if(tipo==="legionella")ch=initCh(SL);setMf(f=>({...f,tipoMant:tipo,checks:ch,ticket:null}));};
+  const chgTipo=tipo=>{let ch={};if(tipo==="calderas")ch=initCh(SC);else if(tipo==="grupos")ch=initCh(SG);else if(tipo==="legionella")ch=initCh(SL);else if(tipo==="solar")ch=initCh(SS);setMf(f=>({...f,tipoMant:tipo,checks:ch,ticket:null}));};
   const mkPDF=html=>{const w=window.open("","_blank");w.document.write(html);w.document.close();w.print();};
 
   const pdfC=p=>{
@@ -421,7 +421,10 @@ export default function App(){
   const adminNav=[["dashboard","Panel"],["tareas","Tareas"],["calendario","Calendario"],["partes","Correctivos"],["partesM","Preventivos"],["fotos","Fotos"],["clientes","Clientes"],["operarios","Operarios"],["dietas","Dietas"]];
   const opNav=[["dashboard","Mi panel"],["mis_tareas","Mis tareas"],["mis_partes","Correctivos"],["mis_partesM","Preventivos"],["fotos","Mis fotos"]];
   const nav=sess.rol==="admin"?adminNav:opNav;
-  const goSec=(key)=>{setSec(key);setSelT(null);setSelDay(null);};
+  const[menuOpen,setMenuOpen]=useState(false);
+  const isMobile=()=>window.innerWidth<768;
+
+  const goSec=(key)=>{setSec(key);setSelT(null);setSelDay(null);setMenuOpen(false);};
 
   const render=()=>{
     if(sec==="dashboard"){
@@ -557,7 +560,7 @@ export default function App(){
             <div style={{marginBottom:12}}>
               <div style={{fontSize:12,color:C.gray,marginBottom:6}}>Tipo de mantenimiento preventivo</div>
               <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {[["calderas","🔥 Calderas"],["grupos","💧 Grupos Presión"],["legionella","🧪 Legionella"],["otros","📋 Otros"]].map(([val,lbl])=>(
+                {[["calderas","🔥 Calderas"],["grupos","💧 Grupos Presión"],["legionella","🧪 Legionella"],["solar","☀️ Solar Térmica"],["otros","📋 Otros"]].map(([val,lbl])=>(
                   <button key={val} onClick={()=>chgTipo(val)} style={{padding:"7px 12px",borderRadius:8,border:"1.5px solid "+(mf.tipoMant===val?C.primary:"#ddd"),background:mf.tipoMant===val?C.primaryLight:"#fff",color:mf.tipoMant===val?C.primary:C.gray,fontSize:13,cursor:"pointer",fontWeight:mf.tipoMant===val?500:400}}>{lbl}</button>
                 ))}
               </div>
@@ -599,6 +602,7 @@ export default function App(){
           )}
           {mf.tipoMant==="grupos"&&renderTabCh(SG,false)}
           {mf.tipoMant==="legionella"&&renderTabCh(SL,false)}
+          {mf.tipoMant==="solar"&&renderTabCh(SS,false)}
           {mf.tipoMant==="otros"&&(
             <Box title="DESCRIPCIÓN DEL MANTENIMIENTO">
               <div style={{marginBottom:8}}><label style={{fontSize:12,color:C.gray,display:"block",marginBottom:4}}>Tipo / título del trabajo</label><input value={mf.otrosDesc} onChange={e=>setMf(f=>({...f,otrosDesc:e.target.value}))} placeholder="Ej: Mantenimiento climatización..." style={IS}/></div>
@@ -626,9 +630,9 @@ export default function App(){
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:8}}>
             <h2 style={{margin:0,fontWeight:500,fontSize:20}}>Calendario</h2>
             <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-              <button onClick={pM} style={{padding:"5px 10px",borderRadius:6,border:"1px solid #ddd",background:"#fff",cursor:"pointer"}}>◀</button>
-              <span style={{fontWeight:500,fontSize:14,minWidth:130,textAlign:"center"}}>{MONTHS[calM]} {calY}</span>
-              <button onClick={nM} style={{padding:"5px 10px",borderRadius:6,border:"1px solid #ddd",background:"#fff",cursor:"pointer"}}>▶</button>
+              <button onClick={pM} style={{padding:"5px 12px",borderRadius:6,border:"1px solid #ddd",background:"#fff",cursor:"pointer",fontSize:16}}>◀</button>
+              <span style={{fontWeight:500,fontSize:14,minWidth:150,textAlign:"center"}}>{MONTHS[calM]} de {calY}</span>
+              <button onClick={nM} style={{padding:"5px 12px",borderRadius:6,border:"1px solid #ddd",background:"#fff",cursor:"pointer",fontSize:16}}>▶</button>
               <select value={calY} onChange={e=>{setCalY(+e.target.value);setSelDay(null);}} style={{padding:"5px 8px",borderRadius:6,border:"1px solid #ddd",fontSize:13}}>{[2024,2025,2026,2027,2028].map(y=><option key={y} value={y}>{y}</option>)}</select>
               <button onClick={pdfMensual} style={{padding:"5px 10px",borderRadius:6,border:"none",background:C.primary,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>
             </div>
@@ -808,7 +812,55 @@ export default function App(){
 
   return(
     <div style={{display:"flex",minHeight:"100vh",background:"#f5f5f3",fontFamily:"system-ui,sans-serif"}}>
-      <div style={{width:172,background:C.navy,minHeight:"100vh",padding:"16px 0",flexShrink:0,position:"sticky",top:0,height:"100vh",overflowY:"auto"}}>
+      {/* Barra superior móvil */}
+      <div style={{display:"none"}} className="mobile-bar"/>
+      <style>{`
+        @media(max-width:767px){
+          .desktop-sidebar{display:none!important;}
+          .mobile-topbar{display:flex!important;}
+          .main-content{padding:12px 14px 32px!important;}
+        }
+        @media(min-width:768px){
+          .mobile-topbar{display:none!important;}
+        }
+        .mobile-topbar{
+          position:fixed;top:0;left:0;right:0;z-index:200;
+          background:#0F2744;padding:10px 14px;
+          align-items:center;justify-content:space-between;
+          display:none;
+        }
+        .mobile-overlay{
+          position:fixed;top:44px;left:0;right:0;bottom:0;
+          background:#0F2744;z-index:199;overflow-y:auto;
+        }
+      `}</style>
+
+      {/* Topbar móvil */}
+      <div className="mobile-topbar">
+        <div style={{fontWeight:600,color:"#fff",fontSize:16}}>GARPI S.L.</div>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <span style={{fontSize:11,color:"rgba(255,255,255,0.6)"}}>{sess.nombre}</span>
+          <button onClick={()=>setMenuOpen(v=>!v)} style={{background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",borderRadius:6,padding:"5px 10px",fontSize:20,cursor:"pointer",lineHeight:1}}>{menuOpen?"✕":"☰"}</button>
+        </div>
+      </div>
+
+      {/* Menú desplegable móvil */}
+      {menuOpen&&(
+        <div className="mobile-overlay">
+          <div style={{padding:"8px 0"}}>
+            {nav.map(([key,label])=>(
+              <div key={key} onClick={()=>goSec(key)}
+                style={{padding:"14px 20px",fontSize:15,color:sec===key?"#fff":"rgba(255,255,255,0.65)",background:sec===key?"rgba(255,255,255,0.12)":"transparent",borderLeft:sec===key?"4px solid #378ADD":"4px solid transparent",cursor:"pointer"}}>
+                {label}
+              </div>
+            ))}
+            <div onClick={doLogout} style={{padding:"14px 20px",fontSize:15,color:"rgba(255,255,255,0.35)",cursor:"pointer",marginTop:8}}>Cerrar sesión</div>
+          </div>
+        </div>
+      )}
+
+      {/* Sidebar escritorio */}
+      <div className="desktop-sidebar" style={{width:172,background:C.navy,minHeight:"100vh",padding:"16px 0",flexShrink:0,position:"sticky",top:0,height:"100vh",overflowY:"auto"}}>
         <div style={{padding:"0 14px 16px",borderBottom:"1px solid rgba(255,255,255,0.1)"}}>
           <div style={{fontWeight:500,color:"#fff",fontSize:16}}>GARPI S.L.</div>
           <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:2}}>{sess.nombre}</div>
@@ -819,7 +871,17 @@ export default function App(){
         ))}
         <div onClick={doLogout} style={{padding:"10px 14px",cursor:"pointer",fontSize:12,color:"rgba(255,255,255,0.35)",marginTop:16}}>Cerrar sesión</div>
       </div>
-      <div style={{flex:1,padding:"24px 28px",overflowY:"auto",maxWidth:760,boxSizing:"border-box"}}>{render()}</div>
+
+      {/* Contenido principal */}
+      <div className="main-content" style={{flex:1,padding:"24px 28px",overflowY:"auto",maxWidth:760,boxSizing:"border-box",marginTop:0}}>
+        {/* Botón volver en móvil cuando estás dentro de un formulario */}
+        {isMobile()&&(sec==="parte_form"||sec==="mant_form")&&(
+          <div style={{marginBottom:12}}>
+            <button onClick={()=>{setSec(sess.rol==="admin"?"tareas":"mis_tareas");setSelT(null);}} style={{padding:"8px 16px",borderRadius:8,border:"none",background:C.navy,color:"#fff",fontSize:14,cursor:"pointer"}}>← Volver</button>
+          </div>
+        )}
+        <div style={{paddingTop:isMobile()?"50px":"0"}}>{render()}</div>
+      </div>
     </div>
   );
 }
