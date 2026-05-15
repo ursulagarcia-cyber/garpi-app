@@ -32,15 +32,41 @@ const SL=[
   {id:"leg_ins",titulo:"ESTADO INSTALACIÓN",items:[{d:"Revisión tuberías y aislamientos",f:"6"},{d:"Difusores y grifería",f:"6"},{d:"Torres de refrigeración (si aplica)",f:"3"},{d:"Libro de registro y documentación",f:"3"}]},
 ];
 
-const SS=[
-  {id:"sol_cap",titulo:"SISTEMA DE CAPTACIÓN",items:[{d:"Limpieza de superficie con agua y productos adecuados",f:"Según estado"},{d:"Cristales: condensaciones en horas centrales y suciedad",f:"3"},{d:"Juntas: agrietamientos, deformaciones",f:"3"},{d:"Absorbedor: corrosión, deformaciones",f:"3"},{d:"Carcasa: deformación, oscilaciones, ventanas de aireación",f:"3"},{d:"Conexiones: aparición de fugas",f:"3"},{d:"Estructura: degradación, indicios de corrosión, apriete de tornillos",f:"3"}]},
-  {id:"sol_acu",titulo:"SISTEMA DE ACUMULACIÓN",items:[{d:"Depósito: presencia de lodos en fondo",f:"12"},{d:"Ánodos sacrificio: comprobación del desgaste",f:"12"},{d:"Ánodos de corriente impresa: comprobación del buen funcionamiento",f:"12"},{d:"Aislamiento: comprobar que no hay humedad",f:"12"}]},
-  {id:"sol_int",titulo:"SISTEMA DE INTERCAMBIO",items:[{d:"Intercambiador de placas: control de funcionamiento, eficiencia y limpieza",f:"12"},{d:"Intercambiador de serpentín: control de funcionamiento, eficiencia y limpieza",f:"12"}]},
-  {id:"sol_hid",titulo:"CIRCUITO HIDRÁULICO",items:[{d:"Fluido refrigerante: comprobar densidad y pH",f:"12"},{d:"Estanqueidad del sistema: efectuar prueba de presión",f:"12"},{d:"Tuberías: comprobación de presiones en los circuitos",f:"12"},{d:"Aislamiento al exterior: degradación, protección uniones y ausencia de humedad",f:"12"},{d:"Aislamiento al interior: uniones y ausencia de humedad",f:"12"},{d:"Purgador automático: control de funcionamiento y limpieza",f:"12"},{d:"Purgador manual: vaciar el aire del botellín",f:"12"},{d:"Bomba: estanqueidad, anomalías de funcionamiento, comprobación de consumos",f:"12"},{d:"Vaso de expansión cerrado: comprobación de la presión",f:"12"},{d:"Vaso de expansión abierto: comprobación del nivel",f:"12"},{d:"Sistema de llenado: control de funcionamiento actuación",f:"12"},{d:"Válvula de corte: control actuaciones (abrir y cerrar) para evitar agarrotamiento",f:"12"},{d:"Válvula de seguridad: control de funcionamiento actuación",f:"12"}]},
-  {id:"sol_ele",titulo:"SISTEMA ELÉCTRICO Y CONTROL",items:[{d:"Cuadro eléctrico: comprobar que está siempre bien cerrado para que no entre polvo",f:"12"},{d:"Control diferencial: control de funcionamiento actuación",f:"12"},{d:"Termostato: control de funcionamiento actuación",f:"12"},{d:"Verificación del sistema de medida: control de funcionamiento actuación",f:"12"}]},
-  {id:"sol_aux",titulo:"SISTEMA DE ENERGÍA AUXILIAR",items:[{d:"Sistema auxiliar: control de funcionamiento actuación",f:"12"}]},
-];const ch={};secs.forEach(s=>s.items.forEach((_,i)=>{ch[s.id+"_"+i+"_si"]=false;ch[s.id+"_"+i+"_no"]=false;ch[s.id+"_"+i+"_obs"]="";}));return ch;}
-function initMF(){return{clienteid:"",emplazamiento:"",poblacion:"",provincia:"",fecha:"",tipoMant:"calderas",checks:initCh(SC),otrosDesc:"",otrosReal:"",tAC:"",tAR:"",tIC:"",tIR:"",tRC:"",tRR:"",g1:"",g2:"",l1a:"",l1b:"",l2a:"",l2b:"",c1a:"",c1b:"",c2a:"",c2b:"",firmaTec:null,firmaOp:null,ticket:null};}
+{id:"sol_aux",titulo:"SISTEMA DE ENERGÍA AUXILIAR",items:[{d:"Sistema auxiliar: control de funcionamiento actuación",f:"12"}]},
+];
+
+function initCh(secs) {
+  const ch = {};
+  if (!secs) return ch;
+  secs.forEach(s => {
+    s.items.forEach((_, i) => {
+      ch[s.id + "_" + i + "_si"] = false;
+      ch[s.id + "_" + i + "_no"] = false;
+      ch[s.id + "_" + i + "_obs"] = "";
+    });
+  });
+  return ch;
+}
+
+function initMF() {
+  return {
+    clienteid: "",
+    emplazamiento: "",
+    poblacion: "",
+    provincia: "",
+    fecha: "",
+    tipoMant: "calderas",
+    checks: initCh(SC),
+    otrosDesc: "",
+    otrosReal: "",
+    tAC: "", tAR: "", tIC: "", tIR: "", tRC: "", tRR: "",
+    g1: "", g2: "", l1a: "", l1b: "", l2a: "", l2b: "", 
+    c1a: "", c1b: "", c2a: "", c2b: "",
+    firmaTec: null,
+    firmaOp: null,
+    ticket: null
+  };
+}
 
 function SigPad({label,onSave}){
   const ref=useRef(null);const dr=useRef(false);const[signed,setSigned]=useState(false);const[saved,setSaved]=useState(false);
