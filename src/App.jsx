@@ -39,16 +39,8 @@ const SS=[
   {id:"sol_hid",titulo:"CIRCUITO HIDRÁULICO",items:[{d:"Fluido refrigerante: comprobar densidad y pH",f:"12"},{d:"Estanqueidad del sistema: efectuar prueba de presión",f:"12"},{d:"Tuberías: comprobación de presiones en los circuitos",f:"12"},{d:"Aislamiento al exterior: degradación, protección uniones y ausencia de humedad",f:"12"},{d:"Aislamiento al interior: uniones y ausencia de humedad",f:"12"},{d:"Purgador automático: control de funcionamiento y limpieza",f:"12"},{d:"Purgador manual: vaciar el aire del botellín",f:"12"},{d:"Bomba: estanqueidad, anomalías de funcionamiento, comprobación de consumos",f:"12"},{d:"Vaso de expansión cerrado: comprobación de la presión",f:"12"},{d:"Vaso de expansión abierto: comprobación del nivel",f:"12"},{d:"Sistema de llenado: control de funcionamiento actuación",f:"12"},{d:"Válvula de corte: control actuaciones (abrir y cerrar) para evitar agarrotamiento",f:"12"},{d:"Válvula de seguridad: control de funcionamiento actuación",f:"12"}]},
   {id:"sol_ele",titulo:"SISTEMA ELÉCTRICO Y CONTROL",items:[{d:"Cuadro eléctrico: comprobar que está siempre bien cerrado para que no entre polvo",f:"12"},{d:"Control diferencial: control de funcionamiento actuación",f:"12"},{d:"Termostato: control de funcionamiento actuación",f:"12"},{d:"Verificación del sistema de medida: control de funcionamiento actuación",f:"12"}]},
   {id:"sol_aux",titulo:"SISTEMA DE ENERGÍA AUXILIAR",items:[{d:"Sistema auxiliar: control de funcionamiento actuación",f:"12"}]},
-]
-function initCh(secs){
-  const ch={};
-  secs.forEach(s=>s.items.forEach((_,i)=>{
-    ch[s.id+"_"+i+"_si"]=false;
-    ch[s.id+"_"+i+"_no"]=false;
-    ch[s.id+"_"+i+"_obs"]="";
-  }));
-  return ch;
-}
+];
+function initCh(secs){const ch={};secs.forEach(s=>s.items.forEach((_,i)=>{ch[s.id+"_"+i+"_si"]=false;ch[s.id+"_"+i+"_no"]=false;ch[s.id+"_"+i+"_obs"]="";}));return ch;}
   function initMF(){return{clienteid:"",emplazamiento:"",poblacion:"",provincia:"",fecha:"",tipoMant:"calderas",checks:initCh(SC),otrosDesc:"",otrosReal:"",tAC:"",tAR:"",tIC:"",tIR:"",tRC:"",tRR:"",g1:"",g2:"",l1a:"",l1b:"",l2a:"",l2b:"",c1a:"",c1b:"",c2a:"",c2b:"",firmaTec:null,firmaOp:null,ticket:null};}
 
 function SigPad({label,onSave}){
@@ -206,7 +198,10 @@ export default function App(){
   const[calY,setCalY]=useState(2026);const[calM,setCalM]=useState(3);
   const[showNT,setShowNT]=useState(false);const[editT,setEditT]=useState(null);
   const[showNO,setShowNO]=useState(false);const[editOp,setEditOp]=useState(null);
-  const[offline,setOffline]=useState(false);
+const[offline,setOffline]=useState(false);
+const[menuOpen,setMenuOpen]=useState(false);
+const[mobile,setMobile]=useState(window.innerWidth<768);
+useEffect(()=>{const fn=()=>setMobile(window.innerWidth<768);window.addEventListener("resize",fn);return()=>window.removeEventListener("resize",fn);},[]);
   const[pf,setPf]=useState({lineas:[{trab:"",mat:""}],obs:"",hrs:"",fCli:null,fTrab:null});
   const[mf,setMf]=useState(initMF());
   const[no,setNo]=useState({nombre:"",usuario:"",password:""});
@@ -430,12 +425,9 @@ export default function App(){
   const adminNav=[["dashboard","Panel"],["tareas","Tareas"],["calendario","Calendario"],["partes","Correctivos"],["partesM","Preventivos"],["fotos","Fotos"],["clientes","Clientes"],["operarios","Operarios"],["dietas","Dietas"]];
   const opNav=[["dashboard","Mi panel"],["mis_tareas","Mis tareas"],["mis_partes","Correctivos"],["mis_partesM","Preventivos"],["fotos","Mis fotos"]];
   const nav=sess.rol==="admin"?adminNav:opNav;
-  const[menuOpen,setMenuOpen]=useState(false);
-  const isMobile=()=>window.innerWidth<768;
-
-  const goSec=(key)=>{setSec(key);setSelT(null);setSelDay(null);setMenuOpen(false);};
-
-  const render=()=>{
+ const goSec=(key)=>{setSec(key);setSelT(null);setSelDay(null);setMenuOpen(false);}; 
+ 
+ const render=()=>{
     if(sec==="dashboard"){
       const pend=myT.filter(t=>t.estado==="pendiente").length,enc=myT.filter(t=>t.estado==="en_curso").length,comp=myT.filter(t=>t.estado==="completada"||t.estado==="firmado").length;
       return(
@@ -884,12 +876,12 @@ export default function App(){
       {/* Contenido principal */}
       <div className="main-content" style={{flex:1,padding:"24px 28px",overflowY:"auto",maxWidth:760,boxSizing:"border-box",marginTop:0}}>
         {/* Botón volver en móvil cuando estás dentro de un formulario */}
-        {isMobile()&&(sec==="parte_form"||sec==="mant_form")&&(
+        {mobile&&(sec==="parte_form"||sec==="mant_form")&&(
           <div style={{marginBottom:12}}>
             <button onClick={()=>{setSec(sess.rol==="admin"?"tareas":"mis_tareas");setSelT(null);}} style={{padding:"8px 16px",borderRadius:8,border:"none",background:C.navy,color:"#fff",fontSize:14,cursor:"pointer"}}>← Volver</button>
           </div>
         )}
-        <div style={{paddingTop:isMobile()?"50px":"0"}}>{render()}</div>
+        <div style={{paddingTop:mobile?"50px":"0"}}>{render()}</div>
       </div>
     </div>
   );
