@@ -39,8 +39,17 @@ const SS=[
   {id:"sol_hid",titulo:"CIRCUITO HIDRÁULICO",items:[{d:"Fluido refrigerante: comprobar densidad y pH",f:"12"},{d:"Estanqueidad del sistema: efectuar prueba de presión",f:"12"},{d:"Tuberías: comprobación de presiones en los circuitos",f:"12"},{d:"Aislamiento al exterior: degradación, protección uniones y ausencia de humedad",f:"12"},{d:"Aislamiento al interior: uniones y ausencia de humedad",f:"12"},{d:"Purgador automático: control de funcionamiento y limpieza",f:"12"},{d:"Purgador manual: vaciar el aire del botellín",f:"12"},{d:"Bomba: estanqueidad, anomalías de funcionamiento, comprobación de consumos",f:"12"},{d:"Vaso de expansión cerrado: comprobación de la presión",f:"12"},{d:"Vaso de expansión abierto: comprobación del nivel",f:"12"},{d:"Sistema de llenado: control de funcionamiento actuación",f:"12"},{d:"Válvula de corte: control actuaciones (abrir y cerrar) para evitar agarrotamiento",f:"12"},{d:"Válvula de seguridad: control de funcionamiento actuación",f:"12"}]},
   {id:"sol_ele",titulo:"SISTEMA ELÉCTRICO Y CONTROL",items:[{d:"Cuadro eléctrico: comprobar que está siempre bien cerrado para que no entre polvo",f:"12"},{d:"Control diferencial: control de funcionamiento actuación",f:"12"},{d:"Termostato: control de funcionamiento actuación",f:"12"},{d:"Verificación del sistema de medida: control de funcionamiento actuación",f:"12"}]},
   {id:"sol_aux",titulo:"SISTEMA DE ENERGÍA AUXILIAR",items:[{d:"Sistema auxiliar: control de funcionamiento actuación",f:"12"}]},
-];const ch={};secs.forEach(s=>s.items.forEach((_,i)=>{ch[s.id+"_"+i+"_si"]=false;ch[s.id+"_"+i+"_no"]=false;ch[s.id+"_"+i+"_obs"]="";}));return ch;}
-function initMF(){return{clienteid:"",emplazamiento:"",poblacion:"",provincia:"",fecha:"",tipoMant:"calderas",checks:initCh(SC),otrosDesc:"",otrosReal:"",tAC:"",tAR:"",tIC:"",tIR:"",tRC:"",tRR:"",g1:"",g2:"",l1a:"",l1b:"",l2a:"",l2b:"",c1a:"",c1b:"",c2a:"",c2b:"",firmaTec:null,firmaOp:null,ticket:null};}
+]
+function initCh(secs){
+  const ch={};
+  secs.forEach(s=>s.items.forEach((_,i)=>{
+    ch[s.id+"_"+i+"_si"]=false;
+    ch[s.id+"_"+i+"_no"]=false;
+    ch[s.id+"_"+i+"_obs"]="";
+  }));
+  return ch;
+}
+  function initMF(){return{clienteid:"",emplazamiento:"",poblacion:"",provincia:"",fecha:"",tipoMant:"calderas",checks:initCh(SC),otrosDesc:"",otrosReal:"",tAC:"",tAR:"",tIC:"",tIR:"",tRC:"",tRR:"",g1:"",g2:"",l1a:"",l1b:"",l2a:"",l2b:"",c1a:"",c1b:"",c2a:"",c2b:"",firmaTec:null,firmaOp:null,ticket:null};}
 
 function SigPad({label,onSave}){
   const ref=useRef(null);const dr=useRef(false);const[signed,setSigned]=useState(false);const[saved,setSaved]=useState(false);
