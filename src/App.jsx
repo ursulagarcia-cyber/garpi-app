@@ -287,17 +287,17 @@ export default function App(){
         if(pm){setPartesM(pm);await idbPutAll("partesm",pm);}
       }catch(e){console.error(e);}
     }else{
-      // Cargar desde IndexedDB
-      const[u,c,t,p,pm]=await Promise.all([
-        idbGetAll("usuarios"),idbGetAll("clientes"),idbGetAll("tareas"),
-        idbGetAll("partes"),idbGetAll("partesm"),
-      ]);
-      if(u.length)setUsuarios(u);
-      if(c.length)setClientes(c);
-      if(t.length)setTareas(t);
-      if(p.length)setPartes(p);
-      if(pm.length)setPartesM(pm);
-    }
+  const[u,c,t,p,pm]=await Promise.all([
+    idbGetAll("usuarios"),idbGetAll("clientes"),idbGetAll("tareas"),
+    idbGetAll("partes"),idbGetAll("partesm"),
+  ]);
+  if(u.length)setUsuarios(u);
+  if(c.length)setClientes(c);
+  if(t.length)setTareas(t);
+  // NO sobrescribir partes y partesM si ya hay datos en memoria
+  if(p.length&&partes.length===0)setPartes(p);
+  if(pm.length&&partesM.length===0)setPartesM(pm);
+}
     const cola=await colaGetAll();
     setPendientes(cola.length);
     setCargando(false);
@@ -375,6 +375,7 @@ export default function App(){
       setPendientes(p=>p+1);
     }
     setSec("mis_tareas");setSelT(null);setPf({lineas:[{trab:"",mat:""}],obs:"",hrs:"",fCli:null,fTrab:null});
+const p2=await idbGetAll("partes");setPartes(p2);
   };
 
   const subM=async(tid)=>{
@@ -400,6 +401,7 @@ export default function App(){
       setPendientes(p=>p+1);
     }
     setSec("mis_tareas");setSelT(null);setMf(initMF());
+const pm2=await idbGetAll("partesm");setPartesM(pm2);
   };
 
   const crearOperario=async()=>{
