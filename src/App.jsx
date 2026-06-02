@@ -219,8 +219,6 @@ useEffect(()=>{
   };
   check();
   const iv=setInterval(check,5000);
-  window.addEventListener("online",check);
-  window.addEventListener("offline",()=>setOnline(false));
   return()=>{clearInterval(iv);};
 },[]);
 
