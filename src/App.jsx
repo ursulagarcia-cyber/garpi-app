@@ -209,11 +209,11 @@ export default function App(){
 
   useEffect(()=>{const fn=()=>setMobile(window.innerWidth<768);window.addEventListener("resize",fn);return()=>window.removeEventListener("resize",fn);},[]);
 
-  // Detectar conexión
-  useEffect(()=>{
+ // Detectar conexión
+useEffect(()=>{
   const check=async()=>{
     try{
-      const r=await fetch("https://www.gstatic.com/generate_204",{cache:"no-store",mode:"no-cors"});
+      await supabase.from("usuarios").select("id").limit(1);
       setOnline(true);
     }catch{setOnline(false);}
   };
