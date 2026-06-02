@@ -271,37 +271,34 @@ useEffect(()=>{
   };
 
   const cargarDatos=async()=>{
-    if(navigator.onLine){
-      try{
-        const[{data:u},{data:c},{data:t},{data:p},{data:pm}]=await Promise.all([
-          supabase.from("usuarios").select("*"),
-          supabase.from("clientes").select("*"),
-          supabase.from("tareas").select("*"),
-          supabase.from("partes").select("*"),
-          supabase.from("partesm").select("*"),
-        ]);
-        if(u){setUsuarios(u);await idbPutAll("usuarios",u);}
-        if(c){setClientes(c);await idbPutAll("clientes",c);}
-        if(t){setTareas(t);await idbPutAll("tareas",t);}
-        if(p){setPartes(p);await idbPutAll("partes",p);}
-        if(pm){setPartesM(pm);await idbPutAll("partesm",pm);}
-      }catch(e){console.error(e);}
-    }else{
-  const[u,c,t,p,pm]=await Promise.all([
-    idbGetAll("usuarios"),idbGetAll("clientes"),idbGetAll("tareas"),
-    idbGetAll("partes"),idbGetAll("partesm"),
-  ]);
-  if(u.length)setUsuarios(u);
-  if(c.length)setClientes(c);
-  if(t.length)setTareas(t);
-  // NO sobrescribir partes y partesM si ya hay datos en memoria
-  if(p.length&&partes.length===0)setPartes(p);
-  if(pm.length&&partesM.length===0)setPartesM(pm);
-}
-    const cola=await colaGetAll();
-    setPendientes(cola.length);
-    setCargando(false);
-  };
+  try{
+    const[{data:u},{data:c},{data:t},{data:p},{data:pm}]=await Promise.all([
+      supabase.from("usuarios").select("*"),
+      supabase.from("clientes").select("*"),
+      supabase.from("tareas").select("*"),
+      supabase.from("partes").select("*"),
+      supabase.from("partesm").select("*"),
+    ]);
+    if(u){setUsuarios(u);await idbPutAll("usuarios",u);}
+    if(c){setClientes(c);await idbPutAll("clientes",c);}
+    if(t){setTareas(t);await idbPutAll("tareas",t);}
+    if(p){setPartes(p);await idbPutAll("partes",p);}
+    if(pm){setPartesM(pm);await idbPutAll("partesm",pm);}
+  }catch(e){
+    const[u,c,t,p,pm]=await Promise.all([
+      idbGetAll("usuarios"),idbGetAll("clientes"),idbGetAll("tareas"),
+      idbGetAll("partes"),idbGetAll("partesm"),
+    ]);
+    if(u.length)setUsuarios(u);
+    if(c.length)setClientes(c);
+    if(t.length)setTareas(t);
+    if(p.length)setPartes(p);
+    if(pm.length)setPartesM(pm);
+  }
+  const cola=await colaGetAll();
+  setPendientes(cola.length);
+  setCargando(false);
+};
 
   useEffect(()=>{cargarDatos();},[]);
 
