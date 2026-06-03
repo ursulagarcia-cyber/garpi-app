@@ -441,17 +441,22 @@ const pm2=await idbGetAll("partesm");setPartesM(pm2);
       +"<td><b>Firma empresa:</b><br>"+(p.trabajador?"<img src='"+p.trabajador+"'/>":" ")+"</td></tr></table></body></html>");
   };
 
-  const pdfM=pm=>{
-    const cli=gc(pm.clienteid),op=gu(pm.operarioid);
-    let secsU=SC;if(pm.tipomant==="grupos")secsU=SG;else if(pm.tipomant==="legionella")secsU=SL;
-    const rows=pm.tipomant==="otros"?"<tr><td colspan='5'><b>"+(pm.otrosdesc||"")+"</b><br>"+(pm.otrosreal||"")+"</td></tr>":secsU.map(s=>{const hf=s.items[0]&&typeof s.items[0]==="object";return"<tr><td colspan='5' style='background:#ddd;font-weight:bold'>"+s.titulo+"</td></tr><tr><th>Op</th>"+(hf?"<th>Frec</th>":"")+"<th>SI</th><th>NO</th><th>Obs</th></tr>"+s.items.map((item,i)=>{const d=typeof item==="object"?item.d:item,f=typeof item==="object"?item.f:null;const ch=pm.checks||{};return"<tr><td>"+d+"</td>"+(f!==null?"<td>"+f+"</td>":"")+"<td>"+(ch[s.id+"_"+i+"_si"]?"&#10003;":"")+"</td><td>"+(ch[s.id+"_"+i+"_no"]?"&#10003;":"")+"</td><td>"+(ch[s.id+"_"+i+"_obs"]||"")+"</td></tr>";}).join("");}).join("");
-    mkPDF("<!DOCTYPE html><html><head><meta charset='utf-8'><style>body{font-family:Arial;margin:20px;font-size:11px}table{width:100%;border-collapse:collapse;margin:6px 0}th,td{border:1px solid #000;padding:4px}th{background:#f0f0f0}img{max-width:150px;max-height:60px}</style></head><body>"
-      +"<div style='display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px'><div><b>GARPI S.L.</b></div><div><b>FICHA MANTENIMIENTO — "+(pm.tipomant==="calderas"?"Sala de Calderas":pm.tipomant==="grupos"?"Grupos de Presión":pm.tipomant==="legionella"?"Legionella":"Otros")+"</b></div></div>"
-      +"<p><b>Instalación:</b> "+(cli.nombre||"")+" &nbsp;<b>Emplazamiento:</b> "+(pm.emplazamiento||"")+"</p>"
-      +"<p><b>Población:</b> "+(pm.poblacion||"")+" &nbsp;<b>Provincia:</b> "+(pm.provincia||"")+" &nbsp;<b>Operario:</b> "+(op.nombre||"")+" &nbsp;<b>Fecha:</b> "+(pm.fecha||"")+"</p>"
-      +"<table>"+rows+"</table>"+(pm.ticket?"<p><b>Ticket:</b><br><img src='"+pm.ticket+"'/></p>":"")
-      +"<br><table><tr><td style='width:50%'><b>Firma cliente:</b><br>"+(pm.firmatec?"<img src='"+pm.firmatec+"'/>":" ")+"</td><td><b>Firma operario:</b><br>"+(pm.firmaop?"<img src='"+pm.firmaop+"'/>":" ")+"</td></tr></table></body></html>");
-  };
+  const pdfM=async pm=>{
+  let pmCompleto=pm;
+  if(online&&!pm.firmatec&&!pm.firmaop){
+    const{data}=await supabase.from("partesm").select("firmatec,firmaop,ticket,checks").eq("id",pm.id).single();
+    if(data)pmCompleto={...pm,...data};
+  }
+  const cli=gc(pmCompleto.clienteid),op=gu(pmCompleto.operarioid);
+  let secsU=SC;if(pmCompleto.tipomant==="grupos")secsU=SG;else if(pmCompleto.tipomant==="legionella")secsU=SL;
+  const rows=pmCompleto.tipomant==="otros"?"<tr><td colspan='5'><b>"+(pmCompleto.otrosdesc||"")+"</b><br>"+(pmCompleto.otrosreal||"")+"</td></tr>":secsU.map(s=>{const hf=s.items[0]&&typeof s.items[0]==="object";return"<tr><td colspan='5' style='background:#ddd;font-weight:bold'>"+s.titulo+"</td></tr><tr><th>Op</th>"+(hf?"<th>Frec</th>":"")+"<th>SI</th><th>NO</th><th>Obs</th></tr>"+s.items.map((item,i)=>{const d=typeof item==="object"?item.d:item,f=typeof item==="object"?item.f:null;const ch=pmCompleto.checks||{};return"<tr><td>"+d+"</td>"+(f!==null?"<td>"+f+"</td>":"")+"<td>"+(ch[s.id+"_"+i+"_si"]?"&#10003;":"")+"</td><td>"+(ch[s.id+"_"+i+"_no"]?"&#10003;":"")+"</td><td>"+(ch[s.id+"_"+i+"_obs"]||"")+"</td></tr>";}).join("");}).join("");
+  mkPDF("<!DOCTYPE html><html><head><meta charset='utf-8'><style>body{font-family:Arial;margin:20px;font-size:11px}table{width:100%;border-collapse:collapse;margin:6px 0}th,td{border:1px solid #000;padding:4px}th{background:#f0f0f0}img{max-width:150px;max-height:60px}</style></head><body>"
+    +"<div style='display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px'><div><b>GARPI S.L.</b></div><div><b>FICHA MANTENIMIENTO — "+(pmCompleto.tipomant==="calderas"?"Sala de Calderas":pmCompleto.tipomant==="grupos"?"Grupos de Presión":pmCompleto.tipomant==="legionella"?"Legionella":"Otros")+"</b></div></div>"
+    +"<p><b>Instalación:</b> "+(cli.nombre||"")+" &nbsp;<b>Emplazamiento:</b> "+(pmCompleto.emplazamiento||"")+"</p>"
+    +"<p><b>Población:</b> "+(pmCompleto.poblacion||"")+" &nbsp;<b>Provincia:</b> "+(pmCompleto.provincia||"")+" &nbsp;<b>Operario:</b> "+(op.nombre||"")+" &nbsp;<b>Fecha:</b> "+(pmCompleto.fecha||"")+"</p>"
+    +"<table>"+rows+"</table>"+(pmCompleto.ticket?"<p><b>Ticket:</b><br><img src='"+pmCompleto.ticket+"'/></p>":"")
+    +"<br><table><tr><td style='width:50%'><b>Firma cliente:</b><br>"+(pmCompleto.firmatec?"<img src='"+pmCompleto.firmatec+"'/>":" ")+"</td><td><b>Firma operario:</b><br>"+(pmCompleto.firmaop?"<img src='"+pmCompleto.firmaop+"'/>":" ")+"</td></tr></table></body></html>");
+};
 
   const pdfMensual=()=>{
     const tm=tareas.filter(t=>{const[y,m]=t.fecha.split("-").map(Number);return y===calY&&m===calM+1;});
