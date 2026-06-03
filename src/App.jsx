@@ -275,7 +275,7 @@ useEffect(()=>{
       supabase.from("clientes").select("*"),
       supabase.from("tareas").select("*"),
       supabase.from("partes").select("*"),
-      supabase.from("partesm").select("id,tareaid,operarioid,clienteid,fecha,tipo,tipomant,checks,emplazamiento,poblacion,provincia,otrosdesc,otrosreal,tac,tar,tic,tir,trc,trr,g1,g2,l1a,l1b,l2a,l2b,c1a,c1b,c2a,c2b,firmatec,firmaop,ticket,fotos,estado"),
+      supabase.from("partesm").select("id,tareaid,operarioid,clienteid,fecha,tipo,tipomant,checks,emplazamiento,poblacion,provincia,otrosdesc,otrosreal,tac,tar,tic,tir,trc,trr,g1,g2,l1a,l1b,l2a,l2b,c1a,c1b,c2a,c2b,firmatec,firmaop,ticket,estado"),
     ]);
     if(u){setUsuarios(u);await idbPutAll("usuarios",u);}
     if(c){setClientes(c);await idbPutAll("clientes",c);}
