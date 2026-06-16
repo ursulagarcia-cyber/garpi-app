@@ -338,6 +338,7 @@ useEffect(()=>{
     if(!online){alert("Necesitas conexión para eliminar tareas");return;}
     await supabase.from("tareas").delete().eq("id",id);
     setTareas(p=>p.filter(t=>t.id!==id));
+    await idbDelete("tareas",id);
   };
 
   const guardarEditTarea=async()=>{
@@ -427,7 +428,19 @@ const pm2=await idbGetAll("partesm");setPartesM(pm2);
   const updL=(i,k,v)=>setPf(f=>{const l=[...f.lineas];l[i]={...l[i],[k]:v};return{...f,lineas:l};});
   const updCh=(k,v)=>setMf(f=>({...f,checks:{...f.checks,[k]:v}}));
   const chgTipo=tipo=>{let ch={};if(tipo==="calderas")ch=initCh(SC);else if(tipo==="grupos")ch=initCh(SG);else if(tipo==="legionella")ch=initCh(SL);else if(tipo==="solar")ch=initCh(SS);setMf(f=>({...f,tipoMant:tipo,checks:ch,ticket:null}));};
-  const mkPDF=html=>{const w=window.open("","_blank");w.document.write(html);w.document.close();w.print();};
+  const mkPDF=html=>{
+  if(mobile){
+    const blob=new Blob([html],{type:"text/html"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download="documento.html";
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }else{
+    const w=window.open("","_blank");w.document.write(html);w.document.close();w.print();
+  }
+};
 
   const pdfC=p=>{
     const cli=gc(p.clienteid),tarea=gt(p.tareaid);
