@@ -201,9 +201,6 @@ export default function App(){
   const[ntCli,setNtCli]=useState("");const[ntTit,setNtTit]=useState("");const[ntDes,setNtDes]=useState("");
   const[ntOp,setNtOp]=useState("");const[ntFec,setNtFec]=useState("");const[ntDie,setNtDie]=useState("");
   const[ntTip,setNtTip]=useState("correctivo");
-  const[ampliarParte,setAmpliarParte]=useState(null);
-  const[ampTexto,setAmpTexto]=useState("");
-  const[ampFotos,setAmpFotos]=useState([]);
   const[usuarios,setUsuarios]=useState([]);
   const[clientes,setClientes]=useState([]);
   const[tareas,setTareas]=useState([]);
@@ -278,7 +275,7 @@ useEffect(()=>{
       supabase.from("clientes").select("*"),
       supabase.from("tareas").select("*"),
       supabase.from("partes").select("*"),
-      supabase.from("partesm").select("id,tareaid,operarioid,clienteid,fecha,tipo,tipomant,checks,emplazamiento,poblacion,provincia,otrosdesc,otrosreal,tac,tar,tic,tir,trc,trr,g1,g2,l1a,l1b,l2a,l2b,c1a,c1b,c2a,c2b,estado,ampliaciones"),
+      supabase.from("partesm").select("id,tareaid,operarioid,clienteid,fecha,tipo,tipomant,checks,emplazamiento,poblacion,provincia,otrosdesc,otrosreal,tac,tar,tic,tir,trc,trr,g1,g2,l1a,l1b,l2a,l2b,c1a,c1b,c2a,c2b,estado"),
     ]);
     if(u){setUsuarios(u);await idbPutAll("usuarios",u);}
     if(c){setClientes(c);await idbPutAll("clientes",c);}
@@ -425,29 +422,6 @@ const pm2=await idbGetAll("partesm");setPartesM(pm2);
     if(!online){alert("Necesitas conexión");return;}
     await supabase.from("usuarios").delete().eq("id",id);
     setUsuarios(p=>p.filter(u=>u.id!==id));
-  };
-
-  const guardarAmpliacion=async()=>{
-    if(!ampTexto.trim()&&ampFotos.length===0){setAmpliarParte(null);return;}
-    const tabla=ampliarParte.tipo==="preventivo"?"partesm":"partes";
-    const lista=ampliarParte.tipo==="preventivo"?partesM:partes;
-    const setLista=ampliarParte.tipo==="preventivo"?setPartesM:setPartes;
-    const parte=lista.find(p=>p.id===ampliarParte.id);
-    const nuevaAmpliacion={fecha:new Date().toLocaleString("es-ES"),texto:ampTexto.trim(),fotos:ampFotos};
-    const ampliacionesActuales=parte.ampliaciones||[];
-    const nuevasAmpliaciones=[...ampliacionesActuales,nuevaAmpliacion];
-    if(online){
-      await supabase.from(tabla).update({ampliaciones:nuevasAmpliaciones}).eq("id",ampliarParte.id);
-    }
-    setLista(p=>p.map(x=>x.id===ampliarParte.id?{...x,ampliaciones:nuevasAmpliaciones}:x));
-    await idbPut(tabla,{...parte,ampliaciones:nuevasAmpliaciones});
-    setAmpliarParte(null);setAmpTexto("");setAmpFotos([]);
-  };
-  const addFotoAmpliacion=file=>{
-    if(!file)return;
-    const r=new FileReader();
-    r.onload=ev=>setAmpFotos(p=>[...p,ev.target.result]);
-    r.readAsDataURL(file);
   };
 
   const addL=()=>setPf(f=>({...f,lineas:[...f.lineas,{trab:"",mat:""}]}));
@@ -882,31 +856,17 @@ const pm2=await idbGetAll("partesm");setPartesM(pm2);
         <div>
           <h2 style={{margin:"0 0 16px",fontWeight:500,fontSize:20,color:"#000"}}>Partes correctivos</h2>
           {myP.length===0&&<div style={{fontSize:14,color:C.gray}}>No hay partes correctivos aún.</div>}
-          {myP.map(p=>{const cli=gc(p.clienteid),op=gu(p.operarioid),tarea=gt(p.tareaid);const puedeAmpliar=sess.rol==="operario"&&p.operarioid===sess.id&&!p._pendiente;return(
+          {myP.map(p=>{const cli=gc(p.clienteid),op=gu(p.operarioid),tarea=gt(p.tareaid);return(
             <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:10}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                <div style={{flex:1}}>
+                <div>
                   <div style={{fontWeight:500,fontSize:14,color:"#000"}}>Parte #{p.id} — {p.obra}</div>
                   <div style={{fontSize:12,color:C.gray,marginTop:2}}>{p.fecha} · {op.nombre}</div>
                   {tarea&&tarea.dieta&&<div style={{fontSize:12,color:C.warning}}>Dieta: {tarea.dieta} €</div>}
                   <div style={{marginTop:6}}><EBdg estado={p.estado}/></div>
                   {p._pendiente&&<div style={{fontSize:11,color:C.warning,marginTop:4}}>⏳ Pendiente de sincronizar</div>}
-                  {p.ampliaciones&&p.ampliaciones.length>0&&(
-                    <div style={{marginTop:8,background:C.grayLight,borderRadius:6,padding:8}}>
-                      <div style={{fontSize:11,fontWeight:500,color:C.gray,marginBottom:4}}>Información adicional:</div>
-                      {p.ampliaciones.map((a,i)=>(
-                        <div key={i} style={{fontSize:12,color:"#000",marginBottom:6}}>
-                          <span style={{color:C.gray,fontSize:11}}>{a.fecha}:</span> {a.texto}
-                          {a.fotos&&a.fotos.length>0&&<div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>{a.fotos.map((f,j)=><img key={j} src={f} style={{width:50,height:50,objectFit:"cover",borderRadius:4,border:"0.5px solid #ddd"}}/>)}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
-                <div style={{display:"flex",flexDirection:"column",gap:6,alignItems:"flex-end"}}>
-                  {online&&sess.rol==="admin"&&!p._pendiente&&<button onClick={()=>pdfC(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.danger,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
-                  {puedeAmpliar&&<button onClick={()=>setAmpliarParte({id:p.id,tipo:"correctivo"})} style={{padding:"6px 12px",borderRadius:7,border:"1px solid "+C.primary,background:"#fff",color:C.primary,fontSize:12,cursor:"pointer"}}>+ Añadir info</button>}
-                </div>
+                {online&&sess.rol==="admin"&&!p._pendiente&&<button onClick={()=>pdfC(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.danger,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
               </div>
             </div>
           );})}
@@ -919,31 +879,17 @@ const pm2=await idbGetAll("partesm");setPartesM(pm2);
         <div>
           <h2 style={{margin:"0 0 16px",fontWeight:500,fontSize:20,color:"#000"}}>Fichas preventivas</h2>
           {myM.length===0&&<div style={{fontSize:14,color:C.gray}}>No hay fichas preventivas aún.</div>}
-          {myM.map(p=>{const cli=gc(p.clienteid),op=gu(p.operarioid);const puedeAmpliar=sess.rol==="operario"&&p.operarioid===sess.id&&!p._pendiente;return(
+          {myM.map(p=>{const cli=gc(p.clienteid),op=gu(p.operarioid);return(
             <div key={p.id} style={{background:"#fff",border:"0.5px solid #e0e0e0",borderRadius:10,padding:14,marginBottom:10}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                <div style={{flex:1}}>
+                <div>
                   <div style={{fontWeight:500,fontSize:14,color:"#000"}}>Ficha #{p.id} — {cli.nombre}</div>
                   <div style={{fontSize:12,color:C.gray,marginTop:2}}>{p.fecha} · {op.nombre}</div>
                   <div style={{fontSize:12,color:C.gray}}>Emplazamiento: {p.emplazamiento}</div>
                   <div style={{marginTop:6,display:"flex",gap:6}}><EBdg estado={p.estado}/><TBdg tipo="preventivo"/></div>
                   {p._pendiente&&<div style={{fontSize:11,color:C.warning,marginTop:4}}>⏳ Pendiente de sincronizar</div>}
-                  {p.ampliaciones&&p.ampliaciones.length>0&&(
-                    <div style={{marginTop:8,background:C.grayLight,borderRadius:6,padding:8}}>
-                      <div style={{fontSize:11,fontWeight:500,color:C.gray,marginBottom:4}}>Información adicional:</div>
-                      {p.ampliaciones.map((a,i)=>(
-                        <div key={i} style={{fontSize:12,color:"#000",marginBottom:6}}>
-                          <span style={{color:C.gray,fontSize:11}}>{a.fecha}:</span> {a.texto}
-                          {a.fotos&&a.fotos.length>0&&<div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>{a.fotos.map((f,j)=><img key={j} src={f} style={{width:50,height:50,objectFit:"cover",borderRadius:4,border:"0.5px solid #ddd"}}/>)}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
-                <div style={{display:"flex",flexDirection:"column",gap:6,alignItems:"flex-end"}}>
-                  {online&&sess.rol==="admin"&&!p._pendiente&&<button onClick={()=>pdfM(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.purple,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
-                  {puedeAmpliar&&<button onClick={()=>setAmpliarParte({id:p.id,tipo:"preventivo"})} style={{padding:"6px 12px",borderRadius:7,border:"1px solid "+C.primary,background:"#fff",color:C.primary,fontSize:12,cursor:"pointer"}}>+ Añadir info</button>}
-                </div>
+                {online&&sess.rol==="admin"&&!p._pendiente&&<button onClick={()=>pdfM(p)} style={{padding:"7px 14px",borderRadius:8,border:"none",background:C.purple,color:"#fff",fontSize:12,cursor:"pointer"}}>PDF</button>}
               </div>
             </div>
           );})}
@@ -1114,32 +1060,6 @@ const pm2=await idbGetAll("partesm");setPartesM(pm2);
         )}
         <div style={{paddingTop:mobile?(!online||sincronizando?"78px":"50px"):"0"}}>{render()}</div>
       </div>
-      {ampliarParte&&(
-        <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
-          <div style={{background:"#fff",borderRadius:12,padding:20,width:"100%",maxWidth:420,maxHeight:"85vh",overflowY:"auto"}}>
-            <h3 style={{margin:"0 0 12px",fontWeight:500,fontSize:16,color:"#000"}}>Añadir información</h3>
-            <textarea placeholder="Escribe la información adicional..." value={ampTexto} onChange={e=>setAmpTexto(e.target.value)} style={{...IS,height:90,resize:"vertical",marginBottom:10}}/>
-            <label style={{display:"inline-block",padding:"6px 12px",borderRadius:7,border:"1px dashed #aaa",fontSize:12,cursor:"pointer",marginBottom:10,color:C.gray}}>
-              + Adjuntar foto(s)
-              <input type="file" accept="image/*" capture="environment" multiple style={{display:"none"}} onChange={e=>{Array.from(e.target.files).forEach(addFotoAmpliacion);e.target.value="";}}/>
-            </label>
-            {ampFotos.length>0&&(
-              <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:10}}>
-                {ampFotos.map((f,i)=>(
-                  <div key={i} style={{position:"relative"}}>
-                    <img src={f} style={{width:60,height:60,objectFit:"cover",borderRadius:6,border:"0.5px solid #ddd"}}/>
-                    <button onClick={()=>setAmpFotos(p=>p.filter((_,j)=>j!==i))} style={{position:"absolute",top:-6,right:-6,background:C.danger,color:"#fff",border:"none",borderRadius:"50%",width:18,height:18,fontSize:11,cursor:"pointer",lineHeight:1}}>✕</button>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div style={{display:"flex",gap:8}}>
-              <button onClick={guardarAmpliacion} style={{flex:1,padding:"10px",borderRadius:8,border:"none",background:C.primary,color:"#fff",fontSize:14,fontWeight:500,cursor:"pointer"}}>Guardar</button>
-              <button onClick={()=>{setAmpliarParte(null);setAmpTexto("");setAmpFotos([]);}} style={{padding:"10px 16px",borderRadius:8,border:"1px solid #ddd",background:"#fff",fontSize:14,cursor:"pointer",color:C.gray}}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
